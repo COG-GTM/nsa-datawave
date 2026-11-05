@@ -67,7 +67,7 @@ public class RabbitHealthCheckerTest {
     public void beforeTest() {
         healthChecker = new RabbitHealthChecker(rabbitHealthProperties, "localhost", "guest", "guest");
         @SuppressWarnings("DataFlowIssue")
-        RestTemplate restTemplate = (RestTemplate) new DirectFieldAccessor(new DirectFieldAccessor(healthChecker).getPropertyValue("rabbitClient"))
+        RestTemplate restTemplate = (RestTemplate) new DirectFieldAccessor(new DirectFieldAccessor(new DirectFieldAccessor(healthChecker).getPropertyValue("rabbitClient")).getPropertyValue("httpLayer"))
                         .getPropertyValue("rt");
         assertNotNull(restTemplate);
         mockServer = MockRestServiceServer.createServer(restTemplate);

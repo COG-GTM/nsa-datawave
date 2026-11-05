@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.health.Status;
 
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
+import com.rabbitmq.http.client.SimpleRestTemplateConfigurator;
 import com.rabbitmq.http.client.domain.BindingInfo;
 import com.rabbitmq.http.client.domain.DestinationType;
 import com.rabbitmq.http.client.domain.ExchangeInfo;
@@ -153,7 +154,8 @@ public class RabbitHealthChecker implements HealthChecker, HealthIndicator {
                 ManagementProperties mgmtProps = rabbitHealthProperties.getManagement();
                 URL rabbitMgmtUrl = new URIBuilder().setScheme(mgmtProps.getScheme()).setHost(host).setPort(mgmtProps.getPort()).setPath(mgmtProps.getUri())
                                 .build().toURL();
-                rabbitClient = new Client(new ClientParameters().url(rabbitMgmtUrl).username(username).password(password));
+                rabbitClient = new Client(new ClientParameters().url(rabbitMgmtUrl).username(username).password(password)
+                                .restTemplateConfigurator(new SimpleRestTemplateConfigurator()));
             } catch (MalformedURLException | URISyntaxException e) {
                 log.warn("Unable to establish a rabbit client.", e);
             }

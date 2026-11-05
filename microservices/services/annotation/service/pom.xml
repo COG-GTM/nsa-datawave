@@ -19,8 +19,8 @@
     </scm>
     <properties>
         <!-- RabbitMQ management HTTP client used by RabbitHealthChecker; spring-cloud-stream-binder-rabbit 4.x no longer brings it in -->
-        <!-- hop 5.x builds its RestTemplate on Apache HttpClient 5, which Spring 6 requires -->
-        <version.rabbit.http-client>5.7.0</version.rabbit.http-client>
+        <!-- hop 4.x is the last line with a RestTemplate layer (hop 5 is JDK HttpClient only); it must be configured with SimpleRestTemplateConfigurator because its HttpComponents configurator uses the HttpClient 4 request factory that Spring 6 removed -->
+        <version.rabbit.http-client>4.0.0</version.rabbit.http-client>
         <start-class>datawave.microservice.annotation.AnnotationService</start-class>
         <version.accumulo>2.1.5</version.accumulo>
         <version.annotation-api>1.0.1-SNAPSHOT</version.annotation-api>

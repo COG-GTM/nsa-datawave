@@ -144,7 +144,7 @@ class AnnotationRabbitTopologyTest {
     private void initialize(StandardEnvironment environment) {
         RabbitHealthProperties properties = Binder.get(environment).bind("annotation.health.rabbit", Bindable.of(RabbitHealthProperties.class)).get();
         checker = new RabbitHealthChecker(properties, "localhost", "guest", "guest");
-        RestTemplate restTemplate = (RestTemplate) new DirectFieldAccessor(new DirectFieldAccessor(checker).getPropertyValue("rabbitClient"))
+        RestTemplate restTemplate = (RestTemplate) new DirectFieldAccessor(new DirectFieldAccessor(new DirectFieldAccessor(checker).getPropertyValue("rabbitClient")).getPropertyValue("httpLayer"))
                         .getPropertyValue("rt");
         server = MockRestServiceServer.createServer(restTemplate);
     }

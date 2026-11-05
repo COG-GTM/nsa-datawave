@@ -36,8 +36,8 @@
         <version.jackson>2.14.3</version.jackson>
         <!-- dependency declared in datawave-microservice-parent, but the version can be overridden here -->
         <version.log4j>2.26.1</version.log4j>
-        <!-- hop 5.x builds its RestTemplate on Apache HttpClient 5, which Spring 6 requires -->
-        <version.rabbit.http-client>5.7.0</version.rabbit.http-client>
+        <!-- hop 4.x is the last line with a RestTemplate layer (hop 5 is JDK HttpClient only); it must be configured with SimpleRestTemplateConfigurator because its HttpComponents configurator uses the HttpClient 4 request factory that Spring 6 removed -->
+        <version.rabbit.http-client>4.0.0</version.rabbit.http-client>
         <!-- dependency declared in datawave-microservice-parent, but the version can be overridden here -->
         <version.slf4j>2.0.17</version.slf4j>
         <version.swagger>2.2.42</version.swagger>
