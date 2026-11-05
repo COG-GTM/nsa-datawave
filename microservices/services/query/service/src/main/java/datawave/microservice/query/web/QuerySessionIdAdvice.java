@@ -3,7 +3,7 @@ package datawave.microservice.query.web;
 import java.util.Arrays;
 import java.util.UUID;
 
-import javax.servlet.http.Cookie;
+import jakarta.servlet.http.Cookie;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

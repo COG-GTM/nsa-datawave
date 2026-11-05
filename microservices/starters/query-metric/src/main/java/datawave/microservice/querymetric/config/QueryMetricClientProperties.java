@@ -2,7 +2,7 @@ package datawave.microservice.querymetric.config;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;

@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.nsa.datawave.microservice</groupId>
         <artifactId>datawave-microservice-service-parent</artifactId>
-        <version>5.0.15</version>
+        <version>5.0.16-SNAPSHOT</version>
         <relativePath>../../microservice-service-parent/pom.xml</relativePath>
     </parent>
     <artifactId>spring-boot-starter-datawave-metadata</artifactId>
@@ -25,8 +25,8 @@
     <properties>
         <version.accumulo>2.1.5</version.accumulo>
         <version.datawave>8.0.0</version.datawave>
-        <version.datawave.starter>4.0.13</version.datawave.starter>
-        <version.datawave.starter-cache>4.0.5</version.datawave.starter-cache>
+        <version.datawave.starter>4.0.14-SNAPSHOT</version.datawave.starter>
+        <version.datawave.starter-cache>4.0.6-SNAPSHOT</version.datawave.starter-cache>
         <version.swagger>2.2.42</version.swagger>
     </properties>
     <dependencyManagement>
@@ -58,7 +58,7 @@
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
@@ -99,7 +99,7 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>

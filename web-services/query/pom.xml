@@ -318,7 +318,7 @@
                     <additionalClasspathElements>
                         <additionalClasspathElement>${basedir}/conf</additionalClasspathElement>
                     </additionalClasspathElements>
-                    <argLine>@{argLine} --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED</argLine>
+                    <argLine>@{argLine} ${datawave.jdk17.add-opens}</argLine>
                     <skipTests>${skipUTs}</skipTests>
                 </configuration>
             </plugin>
