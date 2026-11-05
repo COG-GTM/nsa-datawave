@@ -24,6 +24,7 @@ import org.springframework.boot.actuate.health.Status;
 import com.rabbitmq.http.client.Client;
 import com.rabbitmq.http.client.ClientParameters;
 import com.rabbitmq.http.client.domain.BindingInfo;
+import com.rabbitmq.http.client.domain.DestinationType;
 import com.rabbitmq.http.client.domain.ExchangeInfo;
 import com.rabbitmq.http.client.domain.NodeInfo;
 import com.rabbitmq.http.client.domain.QueueInfo;
@@ -524,10 +525,10 @@ public class RabbitHealthChecker implements HealthChecker, HealthIndicator {
                 for (BindingInfo binding : missingBindings) {
                     log.trace("Creating missing binding: [{}]", binding);
                     try {
-                        if (binding.getDestinationType().equalsIgnoreCase(Binding.DestinationType.EXCHANGE.name()))
+                        if (binding.getDestinationType() == DestinationType.EXCHANGE)
                             rabbitClient.bindExchange(DEFAULT_VHOST, binding.getDestination(), binding.getSource(), binding.getRoutingKey(),
                                             binding.getArguments());
-                        else if (binding.getDestinationType().equalsIgnoreCase(Binding.DestinationType.QUEUE.name()))
+                        else if (binding.getDestinationType() == DestinationType.QUEUE)
                             rabbitClient.bindQueue(DEFAULT_VHOST, binding.getDestination(), binding.getSource(), binding.getRoutingKey(),
                                             binding.getArguments());
                     } catch (Exception e) {
@@ -542,18 +543,18 @@ public class RabbitHealthChecker implements HealthChecker, HealthIndicator {
                     log.trace("Fixing invalid binding: [{}]", bindings.desired);
                     try {
                         // remove invalid bindings
-                        if (bindings.detected.getDestinationType().equalsIgnoreCase(Binding.DestinationType.EXCHANGE.name()))
+                        if (bindings.detected.getDestinationType() == DestinationType.EXCHANGE)
                             rabbitClient.unbindExchange(DEFAULT_VHOST, bindings.detected.getDestination(), bindings.detected.getSource(),
                                             bindings.detected.getRoutingKey());
-                        else if (bindings.desired.getDestinationType().equalsIgnoreCase(Binding.DestinationType.QUEUE.name()))
+                        else if (bindings.desired.getDestinationType() == DestinationType.QUEUE)
                             rabbitClient.unbindQueue(DEFAULT_VHOST, bindings.detected.getDestination(), bindings.detected.getSource(),
                                             bindings.detected.getRoutingKey());
 
                         // add correct bindings
-                        if (bindings.desired.getDestinationType().equalsIgnoreCase(Binding.DestinationType.EXCHANGE.name()))
+                        if (bindings.desired.getDestinationType() == DestinationType.EXCHANGE)
                             rabbitClient.bindExchange(DEFAULT_VHOST, bindings.desired.getDestination(), bindings.desired.getSource(),
                                             bindings.desired.getRoutingKey(), bindings.desired.getArguments());
-                        else if (bindings.desired.getDestinationType().equalsIgnoreCase(Binding.DestinationType.QUEUE.name()))
+                        else if (bindings.desired.getDestinationType() == DestinationType.QUEUE)
                             rabbitClient.bindQueue(DEFAULT_VHOST, bindings.desired.getDestination(), bindings.desired.getSource(),
                                             bindings.desired.getRoutingKey(), bindings.desired.getArguments());
                     } catch (Exception e) {
