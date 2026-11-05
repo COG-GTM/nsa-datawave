@@ -40,6 +40,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.opentest4j.AssertionFailedError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -133,6 +134,10 @@ public class DatePartitionedQueryPlannerTest {
     @Autowired
     @Qualifier("EventQuery")
     protected ShardQueryLogic logic;
+
+    @Autowired
+    @Qualifier("metadataHelperCacheManager")
+    private CacheManager metadataHelperCacheManager;
     protected KryoDocumentDeserializer deserializer;
 
     private final DateFormat formatDate = new SimpleDateFormat("yyyyMMdd");
@@ -168,6 +173,9 @@ public class DatePartitionedQueryPlannerTest {
 
     @AfterEach
     public void tearDown() {
+        // Each test ingests different metadata under the same table name and auths. Spring 6 applies @Cacheable to the protected
+        // AllFieldMetadataHelper.getFieldIndexHoles (Spring 5 only proxied public methods), so drop the cached holes between tests.
+        metadataHelperCacheManager.getCacheNames().forEach(name -> metadataHelperCacheManager.getCache(name).clear());
         this.eventConfigs.clear();
         this.queryParameters.clear();
         this.expectedEvents.clear();

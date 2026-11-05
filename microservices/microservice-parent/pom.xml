@@ -407,6 +407,10 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.14.0</version>
+                    <configuration>
+                        <!-- Spring 6.1 removed LocalVariableTableParameterNameDiscoverer: SpEL #param references need compiled parameter names -->
+                        <parameters>true</parameters>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -629,7 +633,8 @@
                                         <exclude>ch.qos.logback:logback-classic</exclude>
                                         <exclude>org.slf4j:slf4j-reload4j</exclude>
                                         <exclude>org.slf4j:slf4j-log4j12</exclude>
-                                        <exclude>joda-time:joda-time</exclude>
+                                        <!-- joda-time is no longer banned: spring-cloud-function-context 4.x (via spring-cloud-stream 4.x)
+                                             unconditionally registers jackson-datatype-joda's JodaModule on its fallback ObjectMapper -->
                                         <!-- exclude all versions of log4j before version.log4j -->
                                         <exclude>org.apache.logging.log4j:*:(,${version.log4j})</exclude>
                                         <!-- spring boot microservices do not use 1.x versions of junit -->

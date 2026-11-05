@@ -1850,6 +1850,9 @@
                         <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
                         <release>${maven.compiler.release}</release>
+                        <!-- Spring 6.1 removed LocalVariableTableParameterNameDiscoverer: SpEL #param references in @Cacheable keys and
+                             @PreAuthorize expressions only resolve when the compiler records parameter names -->
+                        <parameters>true</parameters>
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
                             <arg>-Xlint:-processing</arg>

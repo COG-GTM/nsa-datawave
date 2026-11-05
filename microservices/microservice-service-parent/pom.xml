@@ -25,6 +25,7 @@
         <version.log4j>2.26.1</version.log4j>
         <version.slf4j>2.0.18</version.slf4j>
         <version.snakeyaml>2.4</version.snakeyaml>
+        <version.jakarta.xml.bind>2.3.3</version.jakarta.xml.bind>
         <version.dropwizard-metrics>4.2.40</version.dropwizard-metrics>
         <version.httpclient4>4.5.14</version.httpclient4>
         <version.httpcore4>4.4.16</version.httpcore4>
@@ -56,6 +57,13 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${version.snakeyaml}</version>
+            </dependency>
+            <!-- JAXB 2.3 keeps the javax.xml.bind package the DataWave response classes are annotated with;
+                 spring-boot-dependencies 3.x would otherwise manage 4.x (jakarta.xml.bind) -->
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${version.jakarta.xml.bind}</version>
             </dependency>
             <!-- spring-boot-dependencies 3.x no longer manages Dropwizard Metrics or Apache HttpClient 4 -->
             <dependency>
