@@ -5,16 +5,25 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import datawave.microservice.authorization.config.DatawaveSecurityProperties;
+import datawave.microservice.authorization.jwt.JWTAuthenticationProvider;
+import datawave.microservice.config.security.JWTSecurityConfigurer;
+
+/**
+ * Test configurer that permits every request. It out-ranks {@link JWTSecurityConfigurer} so that it is the configurer applied to the filter chain.
+ */
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
-@EnableWebSecurity
 @Profile("permitAllWebTest")
-public class PermitAllSecurityConfigurer extends WebSecurityConfigurerAdapter {
+public class PermitAllSecurityConfigurer extends JWTSecurityConfigurer {
+    
+    public PermitAllSecurityConfigurer(DatawaveSecurityProperties securityProperties, JWTAuthenticationProvider jwtAuthenticationProvider) {
+        super(securityProperties, jwtAuthenticationProvider);
+    }
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().anyRequest().permitAll();
+        http.authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll());
     }
 }

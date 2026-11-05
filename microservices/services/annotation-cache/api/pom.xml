@@ -19,7 +19,7 @@
     </scm>
 
     <properties>
-        <version.hazelcast>5.1.2</version.hazelcast>
+        <version.hazelcast>5.5.0</version.hazelcast>
         <!-- Keep Spring versions aligned with the service parent's Spring Boot 2.7.1 BOM. -->
         <version.spring>5.3.21</version.spring>
         <version.spring.boot>2.7.1</version.spring.boot>

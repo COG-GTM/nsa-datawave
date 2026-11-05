@@ -18,15 +18,9 @@
     </scm>
     <properties>
         <version.datawave.hazelcast-common>4.0.8-SNAPSHOT</version.datawave.hazelcast-common>
-        <version.hazelcast-kubernetes>2.2.3</version.hazelcast-kubernetes>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>com.hazelcast</groupId>
-                <artifactId>hazelcast-kubernetes</artifactId>
-                <version>${version.hazelcast-kubernetes}</version>
-            </dependency>
             <dependency>
                 <groupId>gov.nsa.datawave.microservice</groupId>
                 <artifactId>hazelcast-common</artifactId>
@@ -38,10 +32,6 @@
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-kubernetes</artifactId>
         </dependency>
         <dependency>
             <groupId>gov.nsa.datawave.microservice</groupId>

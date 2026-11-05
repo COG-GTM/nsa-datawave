@@ -28,7 +28,7 @@
         <version.protostuff>1.6.2</version.protostuff>
         <!-- this version should be compatible with the version that spring boot is using -->
         <version.springframework>5.3.39</version.springframework>
-        <version.validation-api>2.0.2</version.validation-api>
+        <version.validation-api>3.0.2</version.validation-api>
     </properties>
     <dependencyManagement>
         <dependencies>

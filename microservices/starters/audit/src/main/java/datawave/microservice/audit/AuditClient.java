@@ -96,7 +96,7 @@ public class AuditClient {
         if (response.getStatusCode().value() != HttpStatus.OK.value()) {
             String errorMessage = String.format("Audit request failed. Http Status: (%s, %s)",
                     response.getStatusCodeValue(),
-                    response.getStatusCode().getReasonPhrase());
+                    HttpStatus.valueOf(response.getStatusCode().value()).getReasonPhrase());
             log.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }

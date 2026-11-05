@@ -2,7 +2,7 @@ package datawave.microservice.config.web;
 
 import java.util.List;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;

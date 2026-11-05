@@ -23,12 +23,12 @@ The id of the server matters, and should match what is used in the datawave pare
 
 ## Building Datawave
 
-The root build remains Java 11 by default. Builds run on Java 17 are supported through the
-`java17` profile and remain backward compatible by compiling with `--release 11`.
+The build requires JDK 17: `maven.compiler.release` is 17 and the enforcer plugin requires a `[17,18)` JDK.
+The `java17` profile is kept as a no-op so that existing scripts that pass `-Pjava17` keep working.
 
-When using `-Pjava17`, make sure Maven itself is running on a full JDK 17, not a JRE-only runtime.
-`mvn -version` should report a Java 17 runtime that includes `javac`. If Maven is launched with a
-trimmed runtime, compilation can fail with `error: release version 11 not supported`.
+Make sure Maven itself is running on a full JDK 17, not a JRE-only runtime. `mvn -version` should
+report a Java 17 runtime that includes `javac`. If Maven is launched with a trimmed runtime,
+compilation can fail with `error: release version 17 not supported`.
 
 To perform a full (non-release) 'dev' build  without unit tests:
 

@@ -34,7 +34,6 @@
         <!-- version set in datawave-microservice-parent, but can be overridden here -->
         <!-- 2.14.X is the maximum version of jackson without snakeyaml version 2 causing spring-boot 2.7.1 conflict -->
         <version.jackson>2.14.3</version.jackson>
-        <version.jboss-servlet-api>2.0.0.Final</version.jboss-servlet-api>
         <!-- dependency declared in datawave-microservice-parent, but the version can be overridden here -->
         <version.log4j>2.26.1</version.log4j>
         <version.rabbit.amqp-client>5.14.2</version.rabbit.amqp-client>
@@ -115,7 +114,7 @@
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
@@ -231,10 +230,9 @@
                 <version>${version.zookeeper}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.spec.javax.servlet</groupId>
-                <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-                <version>${version.jboss-servlet-api}</version>
-            </dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -296,7 +294,7 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
@@ -315,8 +313,8 @@
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.accumulo</groupId>
@@ -351,9 +349,9 @@
             <artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-        </dependency>
+            <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>

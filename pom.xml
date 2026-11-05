@@ -39,14 +39,16 @@
         <!-- build.env and env should get overridden if any other read-properties profile is specified (e.g. comnpose)compose -->
         <build.env>dev</build.env>
         <container.registry>ghcr.io</container.registry>
-        <datawave.build.jdk.version.range>[11,12)</datawave.build.jdk.version.range>
+        <datawave.build.jdk.version.range>[17,18)</datawave.build.jdk.version.range>
+        <!-- JDK 17 strong encapsulation: Hadoop, Accumulo, Guava, Kryo and Hazelcast reflect into these packages. -->
+        <datawave.jdk17.add-opens>--add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens java.base/java.util.regex=ALL-UNNAMED --add-opens java.base/java.util.zip=ALL-UNNAMED --add-opens java.base/jdk.internal.misc=ALL-UNNAMED --add-opens java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/sun.nio.cs=ALL-UNNAMED --add-opens java.base/sun.security.util=ALL-UNNAMED --add-opens java.base/sun.security.x509=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED --add-exports java.base/sun.nio.ch=ALL-UNNAMED</datawave.jdk17.add-opens>
         <env>dev</env>
         <!-- Integration-test fork settings. Default to the surefire values so a module only has to set
              the surefire property to move both plugins; override these to split unit and integration tests. -->
         <failsafe.maxMemory>${surefire.maxMemory}</failsafe.maxMemory>
         <failsafe.reuseForks>${surefire.reuseForks}</failsafe.reuseForks>
         <image.prefix>datawave/</image.prefix>
-        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <registry.namespace>nationalsecurityagency/</registry.namespace>
         <skipITs>${skipTests}</skipITs>
@@ -154,8 +156,8 @@
         <version.saxon-he>12.4</version.saxon-he>
         <version.slf4j>2.0.17</version.slf4j>
         <version.spotify-dns>3.1.5</version.spotify-dns>
-        <version.spring>5.3.39</version.spring>
-        <version.spring-security>5.8.16</version.spring-security>
+        <version.spring>6.2.19</version.spring>
+        <version.spring-security>6.5.11</version.spring-security>
         <version.springframework>${version.spring}</version.springframework>
         <version.stream>2.9.6</version.stream>
         <version.thrift>0.17.0</version.thrift>
@@ -2132,6 +2134,8 @@
             <id>java17</id>
             <properties>
                 <datawave.build.jdk.version.range>[17,18)</datawave.build.jdk.version.range>
+        <!-- JDK 17 strong encapsulation: Hadoop, Accumulo, Guava, Kryo and Hazelcast reflect into these packages. -->
+        <datawave.jdk17.add-opens>--add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens java.base/java.util.regex=ALL-UNNAMED --add-opens java.base/java.util.zip=ALL-UNNAMED --add-opens java.base/jdk.internal.misc=ALL-UNNAMED --add-opens java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/sun.nio.cs=ALL-UNNAMED --add-opens java.base/sun.security.util=ALL-UNNAMED --add-opens java.base/sun.security.x509=ALL-UNNAMED --add-opens java.management/sun.management=ALL-UNNAMED --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED --add-exports java.base/sun.nio.ch=ALL-UNNAMED</datawave.jdk17.add-opens>
             </properties>
         </profile>
         <profile>

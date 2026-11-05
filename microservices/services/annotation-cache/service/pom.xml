@@ -69,7 +69,7 @@
                 <groupId>gov.nsa.datawave.microservice</groupId>
                 <artifactId>spring-boot-starter-datawave</artifactId>
                 <version>${version.datawave.starter}</version>
-                <!-- Use the explicitly declared javax.annotation-api rather than duplicate JBoss annotations. -->
+                <!-- Use the explicitly declared jakarta.annotation-api rather than duplicate JBoss annotations. -->
                 <exclusions>
                     <exclusion>
                         <groupId>org.jboss.spec.javax.annotation</groupId>
@@ -105,8 +105,8 @@
             <artifactId>spring-boot-starter-datawave</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

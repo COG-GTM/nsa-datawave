@@ -26,7 +26,7 @@
         <version.log4j>2.26.1</version.log4j>
         <!-- this version should be compatible with the version that spring boot is using -->
         <version.springframework>5.3.39</version.springframework>
-        <version.validation-api>2.0.2</version.validation-api>
+        <version.validation-api>3.0.2</version.validation-api>
     </properties>
     <dependencyManagement>
         <dependencies>

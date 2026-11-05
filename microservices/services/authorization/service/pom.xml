@@ -31,7 +31,6 @@
         <version.jackson>2.14.3</version.jackson>
         <version.jakarta>2.3.3</version.jakarta>
         <version.jaxb-impl>2.3.9</version.jaxb-impl>
-        <version.jboss-servlet-api>2.0.0.Final</version.jboss-servlet-api>
         <version.jjwt>0.11.2</version.jjwt>
         <!-- dependency declared in datawave-microservice-parent, but the version can be overridden here -->
         <version.log4j>2.26.1</version.log4j>
@@ -93,7 +92,7 @@
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
@@ -107,10 +106,9 @@
                 <version>${version.commons-lang3}</version>
             </dependency>
             <dependency>
-                <groupId>org.jboss.spec.javax.servlet</groupId>
-                <artifactId>jboss-servlet-api_4.0_spec</artifactId>
-                <version>${version.jboss-servlet-api}</version>
-            </dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -165,7 +163,7 @@
         <!-- Required to allow the service loader to discover backing implementations for jjwt-api. -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
@@ -184,9 +182,14 @@
             <artifactId>httpclient</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.spec.javax.servlet</groupId>
-            <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>

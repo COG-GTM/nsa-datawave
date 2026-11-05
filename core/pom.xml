@@ -44,7 +44,7 @@
                         <threadCountClasses>1</threadCountClasses>
                         <threadCountMethods>0</threadCountMethods>
                         <threadCountSuites>0</threadCountSuites>
-                        <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1  -Dfile.encoding=UTF8 -Duser.timezone=GMT -Xmx${surefire.maxMemory} -Dapple.awt.UIElement=true -Djava.security.krb5.realm= -Djava.security.krb5.kdc=</argLine>
+                        <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1  -Dfile.encoding=UTF8 -Duser.timezone=GMT -Xmx${surefire.maxMemory} -Dapple.awt.UIElement=true -Djava.security.krb5.realm= -Djava.security.krb5.kdc= ${datawave.jdk17.add-opens}</argLine>
                         <redirectTestOutputToFile>true</redirectTestOutputToFile>
                         <runOrder>random</runOrder>
                     </configuration>

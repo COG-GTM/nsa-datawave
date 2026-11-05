@@ -2,10 +2,13 @@ package datawave.microservice.config.web;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.core5.ssl.SSLContexts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -47,13 +50,13 @@ public class ClientCertRestTemplateCustomizer implements RestTemplateCustomizer 
     }
 
     protected HttpClientBuilder customizeHttpClient(HttpClientBuilder httpClientBuilder, SSLContext sslContext) {
-        if (sslContext != null) {
-            httpClientBuilder.setSSLContext(sslContext);
-        }
-        httpClientBuilder.setMaxConnTotal(maxConnectionsTotal);
-        httpClientBuilder.setMaxConnPerRoute(maxConnectionsPerRoute);
         // TODO: We're allowing all hosts, since the cert presented by the service we're calling likely won't match its hostname (e.g., a docker host name)
         // Instead, we could list the expected cert as a property (or use our server cert), and verify that the presented name matches.
-        return httpClientBuilder.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE);
+        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext != null ? sslContext : SSLContexts.createDefault(),
+                        NoopHostnameVerifier.INSTANCE);
+        // HttpClient 5 moved the pool sizing and TLS settings from the client builder onto the connection manager
+        httpClientBuilder.setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create().setTlsSocketStrategy(tlsStrategy)
+                        .setMaxConnTotal(maxConnectionsTotal).setMaxConnPerRoute(maxConnectionsPerRoute).build());
+        return httpClientBuilder;
     }
 }
