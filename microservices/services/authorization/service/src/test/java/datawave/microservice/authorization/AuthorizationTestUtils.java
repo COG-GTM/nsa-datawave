@@ -40,8 +40,9 @@ public class AuthorizationTestUtils {
             fail("Non-admin request to " + uri + " shouldn't have been allowed.");
         } catch (HttpClientErrorException e) {
             assertEquals(403, e.getRawStatusCode());
-            // Spring 6 includes the request method and URI in HttpStatusCodeException messages
-            assertEquals("403 Forbidden on GET request for \"" + uri.toUriString() + "\": \"<html><head><title>Error</title></head><body>Forbidden</body></html>\"",
+            // Spring 6 includes the request method and URI (without its query string) in HttpStatusCodeException messages
+            String uriWithoutQuery = UriComponentsBuilder.newInstance().scheme(scheme).host("localhost").port(webServicePort).path(path).build().toUriString();
+            assertEquals("403 Forbidden on GET request for \"" + uriWithoutQuery + "\": \"<html><head><title>Error</title></head><body>Forbidden</body></html>\"",
                             e.getMessage());
         }
     }

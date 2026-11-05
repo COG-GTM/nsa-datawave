@@ -32,6 +32,7 @@ import datawave.microservice.http.converter.html.BannerProvider;
 import datawave.microservice.http.converter.html.HtmlProviderHttpMessageConverter;
 import datawave.microservice.http.converter.html.VoidResponseHttpMessageConverter;
 import datawave.microservice.http.converter.protostuff.ProtostuffHttpMessageConverter;
+import datawave.microservice.http.converter.xml.JavaxJaxb2RootElementHttpMessageConverter;
 import datawave.webservice.HtmlProvider;
 import datawave.webservice.result.VoidResponse;
 
@@ -122,7 +123,7 @@ public class WebConfig {
     }
 
     /**
-     * Creates a {@link WebMvcConfigurer} that adds {@link HttpMessageConverter}s to handle protostuff {@link io.protostuff.Message} responses,
+     * Creates a {@link WebMvcConfigurer} that adds {@link HttpMessageConverter}s to handle protostuff {@link io.protostuff.Message} responses, javax JAXB XML responses,
      * {@link HtmlProvider} responses, and {@link VoidResponse} responses.
      *
      * @param serverProperties
@@ -135,6 +136,8 @@ public class WebConfig {
             @Override
             public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
                 converters.add(new ProtostuffHttpMessageConverter());
+                // Spring 6 dropped javax JAXB support from spring-web; the DataWave response classes are javax-annotated
+                converters.add(new JavaxJaxb2RootElementHttpMessageConverter());
                 converters.add(new VoidResponseHttpMessageConverter(serverProperties, bannerProvider.getIfAvailable()));
                 converters.add(new HtmlProviderHttpMessageConverter(serverProperties, bannerProvider.getIfAvailable()));
             }
