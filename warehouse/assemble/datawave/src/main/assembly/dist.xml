@@ -111,6 +111,7 @@
                 <include>${groupId}:datawave-ingest-wikipedia</include>
                 <include>${groupId}:datawave-ingest-nyctlc</include>
                 <include>${groupId}:datawave-ingest-json</include>
+                <include>${groupId}:datawave-ingest-parquet</include>
                 <include>${groupId}:datawave-keyword-common</include>
                 <include>gov.nsa.datawave.core:datawave-core-connection-pool</include>
                 <include>gov.nsa.datawave.core:datawave-core-common</include>
@@ -164,6 +165,7 @@
                   <include>${groupId}:datawave-core</include>
                   <include>${groupId}:datawave-ingest-csv</include>
                   <include>${groupId}:datawave-ingest-json</include>
+                  <include>${groupId}:datawave-ingest-parquet</include>
                   <include>${groupId}:datawave-ingest-core</include>
                   <include>${groupId}:datawave-ingest-configuration</include>
                   <include>${groupId}:datawave-query-core</include>

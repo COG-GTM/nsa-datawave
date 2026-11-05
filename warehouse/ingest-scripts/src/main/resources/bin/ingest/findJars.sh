@@ -31,6 +31,7 @@ CONF_DIR="$FIND_JARS_INSTALL_DIR/config"
 DATAWAVE_INDEX_STATS_JAR=$(findJar datawave-index-stats)
 DATAWAVE_INGEST_CSV_JAR=$(findJar datawave-ingest-csv)
 DATAWAVE_INGEST_JSON_JAR=$(findJar datawave-ingest-json)
+DATAWAVE_INGEST_PARQUET_JAR=$(findJar datawave-ingest-parquet)
 DATAWAVE_CORE_ANNOTATION_JAR=$(findJar datawave-core-annotation)
 DATAWAVE_INGEST_ANNOTATION_JAR=$(findJar datawave-ingest-annotation)
 DATAWAVE_INGEST_WIKIPEDIA_JAR=$(findJar datawave-ingest-wikipedia)

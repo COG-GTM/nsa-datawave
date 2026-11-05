@@ -1,0 +1,151 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!--
+
+   Configuration for ingesting Apache Parquet files. The example settings below match the fixture
+
+   warehouse/ingest-parquet/src/test/resources/input/my.parquet
+
+   which carries the same records and logical schema as warehouse/ingest-csv/src/test/resources/input/my.csv.
+
+   Parquet files are self-describing, so no header is required: every column in the file schema becomes an event
+   field (upper cased, nested groups joined with '_', repeated columns multi-valued). When a header *is* configured,
+   it behaves as it does for CSV, i.e., fields outside the header are dropped unless '.data.process.extra.fields' is
+   true. All other settings (dates, markings, indexing, normalization) are the standard DataWave datatype settings
+   and are interpreted exactly as they are for CSV and JSON, so a Parquet file and a CSV file of the same logical
+   schema land in the same shard and index tables with identical keys.
+
+-->
+
+<configuration>
+
+    <property>
+        <name>file.input.format</name>
+        <value>datawave.ingest.parquet.mr.input.ParquetInputFormat</value>
+    </property>
+
+    <property>
+        <name>data.name</name>
+        <value>myparquet</value>
+        <description>This is the name of the datatype, which distinguishes it from other types for the purposes of ingest
+            processing and perhaps even for dataflow/transport concerns</description>
+    </property>
+
+    <property>
+        <name>myparquet.output.name</name>
+        <value>parquet</value>
+        <description>This is the name to use on the data in Accumulo</description>
+    </property>
+
+    <property>
+        <name>myparquet.ingest.helper.class</name>
+        <value>datawave.ingest.parquet.config.helper.ParquetIngestHelper</value>
+    </property>
+
+    <property>
+        <name>myparquet.reader.class</name>
+        <value>datawave.ingest.parquet.mr.input.ParquetRecordReader</value>
+    </property>
+
+    <property>
+        <name>myparquet.handler.classes</name>
+        <value>datawave.ingest.parquet.mr.handler.ContentParquetColumnBasedHandler</value>
+        <description>List of classes that should process each event</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.separator</name>
+        <value>,</value>
+        <description>Separator between configuration file parameters with multiple values. Parquet records themselves are
+            not delimited text</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.header</name>
+        <value>PROCESSING_DATE,EVENT_ID,LANGUAGE,ORIGINAL_SIZE,PROCESSED_SIZE,FILE_TYPE,MD5,SHA1,SHA256,EVENT_DATE,SECURITY_MARKING,PARENT_FILETYPE</value>
+        <description>Optional. Known fields expected in every record. Omit this property to accept every column in the
+            Parquet schema</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.process.extra.fields</name>
+        <value>true</value>
+        <description>If true, columns outside the configured header are processed too</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.parquet.field.name.delimiter</name>
+        <value>_</value>
+        <description>Delimiter used to join the path of nested Parquet groups into one field name, e.g. ADDRESS_CITY</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.parquet.field.name.uppercase</name>
+        <value>true</value>
+        <description>Upper case the column names found in the Parquet schema</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.marking.visibility.field</name>
+        <value>SECURITY_MARKING</value>
+        <description>Known field in every record that will contain the event's ColumnVisibility for Accumulo</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.marking.default</name>
+        <value>PRIVATE|(BAR&amp;FOO)</value>
+        <description>ColumnVisibility expression to be applied to each field when the raw data provides none</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.date</name>
+        <value>EVENT_DATE</value>
+        <description>Known date field to be used, if found, for the shard row id. Otherwise, current date will be used</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.date.formats</name>
+        <value>yyyy-MM-dd,yyyy-MM-dd'T'HH:mm:ss'Z',yyyy-MM-dd HH:mm:ss</value>
+        <description>Known/valid date formats for *.data.category.date field</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.uuid.fields</name>
+        <value>EVENT_ID,MD5,SHA1,SHA256</value>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.index</name>
+        <value>EVENT_ID,LANGUAGE,FILE_TYPE,MD5,SHA1,SHA256,PARENT_FILETYPE,ORIGINAL_SIZE,PROCESSED_SIZE</value>
+        <description>List of known fields to index</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.category.index.reverse</name>
+        <value>EVENT_ID,LANGUAGE,FILE_TYPE</value>
+        <description>List of known fields to reverse index</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.default.normalization.failure.policy</name>
+        <value>FAIL</value>
+        <description>For field normalization failures: DROP, LEAVE, FAIL</description>
+    </property>
+
+    <property>
+        <name>myparquet.data.default.type.class</name>
+        <value>datawave.data.type.LcNoDiacriticsType</value>
+        <description>Default type</description>
+    </property>
+
+    <property>
+        <name>myparquet.*DATE.data.field.type.class</name>
+        <value>datawave.data.type.DateType</value>
+    </property>
+
+    <property>
+        <name>myparquet.*SIZE.data.field.type.class</name>
+        <value>datawave.data.type.NumberType</value>
+    </property>
+</configuration>
