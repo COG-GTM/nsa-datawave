@@ -229,10 +229,6 @@
                 <artifactId>zookeeper-jute</artifactId>
                 <version>${version.zookeeper}</version>
             </dependency>
-            <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
