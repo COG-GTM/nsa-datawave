@@ -57,7 +57,10 @@ public class ParquetIngestHelper extends ContentBaseIngestHelper {
             // per-value cleaning, escaped separators); repeated columns arrive already split
             if (fields.get(fieldName).size() == 1 && helper.isMultiValuedField(fieldName)) {
                 String singleFieldName = helper.usingMultiValuedFieldsDisallowlist() ? fieldName : helper.getMultiValuedFields().get(fieldName);
-                for (String value : fieldValue.split(helper.getEscapeSafeMultiValueSeparatorPattern())) {
+                // only values that actually carry the separator are split; the separator is used as a regex by the shared helper
+                String[] values = fieldValue.contains(helper.getMultiValueSeparator()) ? fieldValue.split(helper.getEscapeSafeMultiValueSeparatorPattern())
+                                : new String[] {fieldValue};
+                for (String value : values) {
                     value = helper.clean(singleFieldName, value);
                     if (value != null && !value.isEmpty()) {
                         results.put(singleFieldName, new NormalizedFieldAndValue(singleFieldName, helper.cleanEscapedMultivalueSeparators(value)));

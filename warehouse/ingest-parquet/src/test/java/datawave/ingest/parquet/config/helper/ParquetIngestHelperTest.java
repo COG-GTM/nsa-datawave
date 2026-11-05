@@ -135,6 +135,14 @@ public class ParquetIngestHelperTest {
             tags.add(n.getEventFieldValue());
         }
         assertEquals(new java.util.TreeSet<>(java.util.Arrays.asList("one;two", "three")), tags);
+        // a multi-valued field without the separator is kept whole (under its alias)
+        fields = record();
+        fields.put("STATE", "Texas");
+        fieldMap = helper.getEventFields(event(fields));
+        assertEquals(1, fieldMap.get("REGION").size());
+        assertEquals("Texas", fieldMap.get("REGION").iterator().next().getEventFieldValue());
+        fields.put("CITY", "Paris;Dallas");
+        fieldMap = helper.getEventFields(event(fields));
         // CITY is not configured as multi-valued, so it is left intact
         assertEquals(1, fieldMap.get("CITY").size());
         assertEquals("Paris;Dallas", fieldMap.get("CITY").iterator().next().getEventFieldValue());
