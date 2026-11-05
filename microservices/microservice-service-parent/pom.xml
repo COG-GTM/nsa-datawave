@@ -26,6 +26,7 @@
         <version.slf4j>2.0.18</version.slf4j>
         <version.snakeyaml>2.4</version.snakeyaml>
         <version.jakarta.xml.bind>2.3.3</version.jakarta.xml.bind>
+        <version.jaxb-impl>2.3.9</version.jaxb-impl>
         <version.dropwizard-metrics>4.2.40</version.dropwizard-metrics>
         <version.httpclient4>4.5.14</version.httpclient4>
         <version.httpcore4>4.4.16</version.httpcore4>
@@ -64,6 +65,21 @@
                 <groupId>jakarta.xml.bind</groupId>
                 <artifactId>jakarta.xml.bind-api</artifactId>
                 <version>${version.jakarta.xml.bind}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${version.jaxb-impl}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${version.jaxb-impl}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>txw2</artifactId>
+                <version>${version.jaxb-impl}</version>
             </dependency>
             <!-- spring-boot-dependencies 3.x no longer manages Dropwizard Metrics or Apache HttpClient 4 -->
             <dependency>
