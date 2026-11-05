@@ -64,7 +64,7 @@ Parquet files are self-describing, so unlike CSV no header is required:
 * `<type>.data.separator` defaults to `,` and is only used for list-valued configuration values.
 * `<type>.data.category.marking.visibility.field` names a column holding the event's column
   visibility; otherwise `<type>.data.category.marking.default` applies.
-* `<type>.data.fields.allowlist` / `<type>.data.fields.disallowlist` work as for CSV.
+* `<type>.data.field.allowlist` / `<type>.data.field.disallowlist` keep or drop columns by name (a disallowlist works on its own for Parquet).
 * All standard datatype settings (`.data.category.date`, `.data.category.date.formats`,
   `.data.category.uid.fields`, `.data.category.index`, `.data.category.index.reverse`,
   `.data.default.type.class`, `<FIELD>.data.field.type.class`, tokenization, policy enforcement, ...)

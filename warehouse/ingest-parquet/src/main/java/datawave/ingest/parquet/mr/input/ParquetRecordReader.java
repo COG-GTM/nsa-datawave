@@ -19,7 +19,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.example.GroupReadSupport;
-import org.apache.parquet.hadoop.util.HadoopInputFile;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
@@ -32,8 +31,9 @@ import datawave.ingest.parquet.config.helper.ParquetDataTypeHelper;
 import datawave.ingest.parquet.util.ParquetGroupFlattener;
 
 /**
- * Reads one Parquet file, producing one {@link RawRecordContainer} per row. Each row is flattened into field/value pairs with {@link ParquetGroupFlattener}; the
- * canonical JSON form of those pairs becomes the event's raw data so that {@code ParquetIngestHelper} can rebuild the fields downstream.
+ * Reads one Parquet file, producing one {@link RawRecordContainer} per row. Each row is flattened into field/value pairs with
+ * {@link ParquetGroupFlattener}; the canonical JSON form of those pairs becomes the event's raw data so that {@code ParquetIngestHelper} can rebuild the
+ * fields downstream.
  */
 public class ParquetRecordReader extends AbstractEventRecordReader<BytesWritable> {
 
@@ -90,6 +90,8 @@ public class ParquetRecordReader extends AbstractEventRecordReader<BytesWritable
         }
 
         event.clear();
+        // configured UID columns may be absent from a row; never let a previous row's value leak into this one
+        uidOverrideFields.replaceAll((field, value) -> null);
         currentKey.set(rowCount++);
         currentFields = flattener.flatten(group);
         if (headerFields != null) {
@@ -122,7 +124,7 @@ public class ParquetRecordReader extends AbstractEventRecordReader<BytesWritable
             event.setTimestamp(System.currentTimeMillis());
         }
 
-        UID newUID = uidOverride(event);
+        UID newUID = uidOverrideFields.containsValue(null) ? null : uidOverride(event);
         if (null != newUID) {
             event.setId(newUID);
         } else {

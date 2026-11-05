@@ -16,6 +16,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.hadoop.ParquetReader;
 import org.apache.parquet.hadoop.example.GroupReadSupport;
+import org.apache.parquet.schema.LogicalTypeAnnotation.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Multimap;
@@ -78,6 +79,15 @@ public class ParquetGroupFlattenerTest {
         Multimap<String,String> second = flattener.flatten(groups.get(1));
         assertFalse(second.containsKey("COUNTRY"));
         assertEquals(4, second.keySet().size());
+    }
+
+    @Test
+    public void testTimestampPrecisionIsPreserved() {
+        assertEquals("2020-01-01T00:00:00Z", ParquetGroupFlattener.timestamp(1577836800000L, TimeUnit.MILLIS));
+        assertEquals("2020-01-01T00:00:00.123Z", ParquetGroupFlattener.timestamp(1577836800123L, TimeUnit.MILLIS));
+        assertEquals("2020-01-01T00:00:00.123456Z", ParquetGroupFlattener.timestamp(1577836800123456L, TimeUnit.MICROS));
+        assertEquals("2020-01-01T00:00:00.987654321Z", ParquetGroupFlattener.timestamp(1577836800987654321L, TimeUnit.NANOS));
+        assertEquals("1969-12-31T23:59:59.999999Z", ParquetGroupFlattener.timestamp(-1L, TimeUnit.MICROS));
     }
 
     @Test

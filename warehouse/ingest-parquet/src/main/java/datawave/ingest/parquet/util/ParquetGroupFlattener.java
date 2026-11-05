@@ -7,7 +7,6 @@ import java.nio.ByteOrder;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,7 +48,8 @@ import com.google.gson.JsonParser;
  */
 public class ParquetGroupFlattener {
 
-    private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+    /** ISO-8601 UTC instant; fractional seconds are printed only when present, in groups of three digits */
+    private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ISO_INSTANT;
     private static final long JULIAN_DAY_OF_EPOCH = 2440588L;
     private static final long NANOS_PER_DAY = 86400L * 1_000_000_000L;
 
@@ -178,19 +178,24 @@ public class ParquetGroupFlattener {
         return new BigDecimal(unscaled, annotation.getScale()).toPlainString();
     }
 
-    private static String timestamp(long value, TimeUnit unit) {
-        long millis;
+    /**
+     * Render an epoch value as an ISO-8601 UTC instant, keeping whatever sub-second precision the column carries (e.g. {@code 2020-01-01T00:00:00.123456Z}).
+     */
+    static String timestamp(long value, TimeUnit unit) {
+        long perSecond;
         switch (unit) {
             case MICROS:
-                millis = Math.floorDiv(value, 1_000L);
+                perSecond = 1_000_000L;
                 break;
             case NANOS:
-                millis = Math.floorDiv(value, 1_000_000L);
+                perSecond = 1_000_000_000L;
                 break;
             default:
-                millis = value;
+                perSecond = 1_000L;
         }
-        return TIMESTAMP_FORMAT.format(Instant.ofEpochMilli(millis));
+        long seconds = Math.floorDiv(value, perSecond);
+        long nanos = Math.floorMod(value, perSecond) * (1_000_000_000L / perSecond);
+        return TIMESTAMP_FORMAT.format(Instant.ofEpochSecond(seconds, nanos));
     }
 
     private static String int96Timestamp(Binary binary) {
@@ -198,8 +203,8 @@ public class ParquetGroupFlattener {
         long nanosOfDay = buf.getLong();
         int julianDay = buf.getInt();
         long epochDay = julianDay - JULIAN_DAY_OF_EPOCH;
-        long millis = epochDay * 86_400_000L + Math.floorDiv(nanosOfDay, 1_000_000L);
-        return TIMESTAMP_FORMAT.format(Instant.ofEpochMilli(millis));
+        long seconds = epochDay * 86_400L + Math.floorDiv(nanosOfDay, 1_000_000_000L);
+        return TIMESTAMP_FORMAT.format(Instant.ofEpochSecond(seconds, Math.floorMod(nanosOfDay, 1_000_000_000L)));
     }
 
     private static String uuid(byte[] bytes) {

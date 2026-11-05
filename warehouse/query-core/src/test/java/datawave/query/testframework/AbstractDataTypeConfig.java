@@ -38,12 +38,12 @@ import datawave.ingest.data.config.ingest.ContentBaseIngestHelper;
 import datawave.ingest.data.config.ingest.VirtualIngest;
 import datawave.ingest.json.config.helper.JsonIngestHelper;
 import datawave.ingest.json.mr.handler.ContentJsonColumnBasedHandler;
-import datawave.ingest.parquet.config.helper.ParquetIngestHelper;
-import datawave.ingest.parquet.mr.handler.ContentParquetColumnBasedHandler;
-import datawave.ingest.parquet.mr.input.ParquetRecordReader;
 import datawave.ingest.json.mr.input.JsonRecordReader;
 import datawave.ingest.mapreduce.handler.shard.AbstractColumnBasedHandler;
 import datawave.ingest.mapreduce.handler.shard.ShardedDataTypeHandler;
+import datawave.ingest.parquet.config.helper.ParquetIngestHelper;
+import datawave.ingest.parquet.mr.handler.ContentParquetColumnBasedHandler;
+import datawave.ingest.parquet.mr.input.ParquetRecordReader;
 import datawave.policy.IngestPolicyEnforcer;
 
 /**

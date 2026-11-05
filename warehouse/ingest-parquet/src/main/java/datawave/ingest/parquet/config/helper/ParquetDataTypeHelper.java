@@ -1,8 +1,11 @@
 package datawave.ingest.parquet.config.helper;
 
+import java.util.Set;
+
 import org.apache.hadoop.conf.Configuration;
 
 import datawave.ingest.data.config.CSVHelper;
+import datawave.ingest.data.config.DataTypeHelper;
 
 /**
  * Data type helper for Parquet input. Parquet files are self-describing, so the CSV header is optional: when no header is configured every column found in
@@ -33,6 +36,7 @@ public class ParquetDataTypeHelper extends CSVHelper {
     private String columnVisibilityField = null;
     private String fieldNameDelimiter = DEFAULT_FIELD_NAME_DELIMITER;
     private boolean uppercaseFieldNames = true;
+    private Set<String> fieldDisallowlist = null;
 
     @Override
     public void setup(Configuration config) throws IllegalArgumentException {
@@ -54,8 +58,7 @@ public class ParquetDataTypeHelper extends CSVHelper {
      * @return the configuration with Parquet defaults applied
      */
     private Configuration withParquetDefaults(Configuration config) {
-        String type = config.get(datawave.ingest.data.config.DataTypeHelper.Properties.DATA_NAME_OVERRIDE,
-                        config.get(datawave.ingest.data.config.DataTypeHelper.Properties.DATA_NAME));
+        String type = config.get(DataTypeHelper.Properties.DATA_NAME_OVERRIDE, config.get(DataTypeHelper.Properties.DATA_NAME));
         if (type == null) {
             return config;
         }
@@ -67,6 +70,11 @@ public class ParquetDataTypeHelper extends CSVHelper {
             config.set(type + DATA_SEP, ",");
         }
         return config;
+    }
+
+    @Override
+    public Set<String> getFieldDisallowlist() {
+        return fieldDisallowlist;
     }
 
     public String getColumnVisibilityField() {

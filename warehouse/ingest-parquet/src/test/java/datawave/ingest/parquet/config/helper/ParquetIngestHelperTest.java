@@ -86,15 +86,17 @@ public class ParquetIngestHelperTest {
 
     @Test
     public void testAllowAndDisallowLists() {
-        conf.set("myparquet.data.fields.disallowlist", "LANGUAGE");
+        conf.set("myparquet.data.field.disallowlist", "LANGUAGE");
+        TypeRegistry.reset();
+        TypeRegistry.getInstance(conf);
         ParquetIngestHelper helper = new ParquetIngestHelper();
         helper.setup(conf);
         Multimap<String,NormalizedContentInterface> fieldMap = helper.getEventFields(event(record()));
         assertFalse(fieldMap.containsKey("LANGUAGE"));
         assertTrue(fieldMap.containsKey("EVENT_ID"));
 
-        conf.unset("myparquet.data.fields.disallowlist");
-        conf.set("myparquet.data.fields.allowlist", "EVENT_ID,LANGUAGE");
+        conf.unset("myparquet.data.field.disallowlist");
+        conf.set("myparquet.data.field.allowlist", "EVENT_ID,LANGUAGE");
         TypeRegistry.reset();
         TypeRegistry.getInstance(conf);
         helper = new ParquetIngestHelper();
@@ -103,6 +105,25 @@ public class ParquetIngestHelperTest {
         assertEquals(2, fieldMap.keySet().size());
         assertTrue(fieldMap.containsKey("EVENT_ID"));
         assertTrue(fieldMap.containsKey("LANGUAGE"));
+    }
+
+    @Test
+    public void testConfiguredMultiValuedScalarIsSplitLikeCsv() {
+        conf.set("myparquet.data.fields.multivalued", "STATE");
+        conf.set("myparquet.data.multivalued.separator", ";");
+        TypeRegistry.reset();
+        TypeRegistry.getInstance(conf);
+        ParquetIngestHelper helper = new ParquetIngestHelper();
+        helper.setup(conf);
+
+        Multimap<String,String> fields = record();
+        fields.put("STATE", "Texas;Oklahoma");
+        fields.put("CITY", "Paris;Dallas");
+        Multimap<String,NormalizedContentInterface> fieldMap = helper.getEventFields(event(fields));
+        assertEquals(2, fieldMap.get("STATE").size());
+        // CITY is not configured as multi-valued, so it is left intact
+        assertEquals(1, fieldMap.get("CITY").size());
+        assertEquals("Paris;Dallas", fieldMap.get("CITY").iterator().next().getEventFieldValue());
     }
 
     @Test

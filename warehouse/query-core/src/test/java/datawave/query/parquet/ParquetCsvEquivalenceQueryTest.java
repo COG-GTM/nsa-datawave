@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import datawave.core.query.configuration.GenericQueryConfiguration;
 import datawave.ingest.parquet.util.ParquetTestFileWriter;
 import datawave.microservice.query.QueryImpl;
 import datawave.query.QueryTestTableHelper;
@@ -34,7 +35,6 @@ import datawave.query.iterator.profile.FinalDocumentTrackingIterator;
 import datawave.query.testframework.AbstractFunctionalQueryJUnit5;
 import datawave.query.testframework.AccumuloSetupJUnit5;
 import datawave.query.testframework.CitiesDataType;
-import datawave.query.testframework.CitiesDataType.CityEntry;
 import datawave.query.testframework.CitiesDataType.CityField;
 import datawave.query.testframework.CityDataManager;
 import datawave.query.testframework.DataTypeHadoopConfig;
@@ -42,7 +42,6 @@ import datawave.query.testframework.FieldConfig;
 import datawave.query.testframework.FileType;
 import datawave.query.testframework.GenericCityFields;
 import datawave.query.testframework.ParquetCitiesDataType;
-import datawave.core.query.configuration.GenericQueryConfiguration;
 
 /**
  * Ingests the same records twice, once from a CSV fixture through the CSV type and once from a Parquet fixture through the Parquet type, into two in-memory
