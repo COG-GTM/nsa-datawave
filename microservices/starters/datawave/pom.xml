@@ -574,6 +574,11 @@
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
                 </exclusion>
+                <!-- spring-cloud-function-context 4.x drags in jackson-datatype-joda, which carries the banned joda-time -->
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.datatype</groupId>
+                    <artifactId>jackson-datatype-joda</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

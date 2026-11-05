@@ -62,12 +62,12 @@ public class RabbitMQMessagingConfiguration {
             }
 
             finalConnectionFactory = new CachingConnectionFactory(dedicatedConnectionFactory);
+            // Spring AMQP 3 removed setPublisherConfirms(boolean); the legacy boolean maps onto the SIMPLE confirm type
             if (rabbitMqProperties.getPublisherConfirmType() != null) {
                 finalConnectionFactory.setPublisherConfirmType(rabbitMqProperties.getPublisherConfirmType());
+            } else if (rabbitMqProperties.isPublisherConfirms()) {
+                finalConnectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.SIMPLE);
             }
-
-            finalConnectionFactory.setPublisherConfirms(CachingConnectionFactory.ConfirmType.SIMPLE != rabbitMqProperties.getPublisherConfirmType()
-                            && rabbitMqProperties.isPublisherConfirms());
             finalConnectionFactory.setPublisherReturns(rabbitMqProperties.isPublisherReturns());
         }
         return finalConnectionFactory;

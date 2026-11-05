@@ -39,6 +39,8 @@
         <!-- version set in datawave-microservice-parent, but can be overridden here -->
         <!-- 2.14.X is the maximum version of jackson without snakeyaml version 2 causing spring-boot 2.7.1 conflict -->
         <version.jackson>2.14.3</version.jackson>
+        <!-- JAXB 2.3 keeps the javax.xml.bind package the DataWave response classes are annotated with; spring-boot-dependencies 3.x would otherwise manage 4.x (jakarta.xml.bind) -->
+        <version.jakarta>2.3.3</version.jakarta>
         <version.jaxb-impl>2.3.3</version.jaxb-impl>
         <!-- dependency declared in datawave-microservice-parent, but the version can be overridden here -->
         <version.log4j>2.26.1</version.log4j>
@@ -67,6 +69,11 @@
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
                 <version>${version.jaxb-impl}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${version.jakarta}</version>
             </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>

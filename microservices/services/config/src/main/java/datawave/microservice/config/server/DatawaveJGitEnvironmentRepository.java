@@ -3,6 +3,7 @@ package datawave.microservice.config.server;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
 import org.eclipse.jgit.transport.SshSessionFactory;
+import io.micrometer.observation.ObservationRegistry;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.config.environment.Environment;
@@ -21,8 +22,9 @@ import com.jcraft.jsch.UserInfo;
 public class DatawaveJGitEnvironmentRepository extends MultipleJGitEnvironmentRepository {
     private boolean initialized = false;
 
-    public DatawaveJGitEnvironmentRepository(ConfigurableEnvironment environment, MultipleJGitEnvironmentProperties properties) {
-        super(environment, properties);
+    public DatawaveJGitEnvironmentRepository(ConfigurableEnvironment environment, MultipleJGitEnvironmentProperties properties,
+                    ObservationRegistry observationRegistry) {
+        super(environment, properties, observationRegistry);
     }
 
     @Override

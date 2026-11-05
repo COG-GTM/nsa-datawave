@@ -1,6 +1,7 @@
 package datawave.microservice.config.server;
 
 import org.eclipse.jgit.api.TransportConfigCallback;
+import io.micrometer.observation.ObservationRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.config.server.config.ConfigServerProperties;
 import org.springframework.cloud.config.server.environment.EnvironmentRepository;
@@ -28,8 +29,8 @@ public class DatawaveConfigServerConfiguration {
     private TransportConfigCallback transportConfigCallback;
 
     @Bean
-    public EnvironmentRepository environmentRepository() {
-        MultipleJGitEnvironmentRepository repository = new DatawaveJGitEnvironmentRepository(environment, properties);
+    public EnvironmentRepository environmentRepository(ObservationRegistry observationRegistry) {
+        MultipleJGitEnvironmentRepository repository = new DatawaveJGitEnvironmentRepository(environment, properties, observationRegistry);
         repository.setTransportConfigCallback(this.transportConfigCallback);
         if (this.server.getDefaultLabel() != null) {
             repository.setDefaultLabel(this.server.getDefaultLabel());

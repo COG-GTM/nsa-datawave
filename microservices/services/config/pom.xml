@@ -127,12 +127,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-rsa</artifactId>
-            <!-- not managed by spring-boot-dependencies or spring-cloud-dependencies -->
-            <version>1.1.5</version>
-        </dependency>
     </dependencies>
     <repositories>
         <repository>

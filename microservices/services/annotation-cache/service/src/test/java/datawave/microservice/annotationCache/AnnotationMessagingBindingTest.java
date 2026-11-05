@@ -15,14 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.stream.binder.BinderFactory;
-import org.springframework.cloud.stream.test.binder.MessageCollector;
-import org.springframework.cloud.stream.test.binder.TestSupportBinder;
-import org.springframework.context.ApplicationContext;
+import org.springframework.cloud.stream.binder.test.InputDestination;
+import org.springframework.cloud.stream.binder.test.OutputDestination;
+import org.springframework.cloud.stream.binder.test.TestChannelBinderConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.util.MimeTypeUtils;
@@ -34,12 +32,11 @@ import datawave.microservice.annotation.messaging.AnnotationMessagingConfigurati
 /**
  * Verifies that Spring Cloud Stream uses the annotation protobuf converter on both binding directions. The outbound test checks that
  * {@link AnnotationMessagePublisher} sends protobuf bytes with the protobuf content type; the inbound test sends bytes to the application-side
- * {@code receive-in-0} channel and checks that the function receives an {@link AnnotationMessage}. The configured {@code annotation-cache-in} destination is
- * the broker-side address; this in-memory test targets the binding channel directly and does not test broker routing. Consumer cache behavior is covered by
- * separate tests.
+ * {@code annotation-cache-in} destination through the Spring Cloud Stream test binder and checks that the function receives an {@link AnnotationMessage}.
+ * This in-memory test does not test broker routing. Consumer cache behavior is covered by separate tests.
  */
 @SpringBootTest(classes = AnnotationMessagingBindingTest.StreamTestApplication.class,
-                properties = {"spring.cloud.config.enabled=false", "spring.cloud.function.definition=receive", "spring.cloud.stream.defaultBinder=test",
+                properties = {"spring.cloud.config.enabled=false", "spring.cloud.function.definition=receive",
                         "spring.cloud.stream.bindings.receive-in-0.destination=annotation-cache-in",
                         "spring.cloud.stream.bindings.receive-in-0.contentType=application/x-protobuf",
                         "spring.cloud.stream.bindings.persisted-out-0.destination=annotation-cache-out",
@@ -51,13 +48,10 @@ class AnnotationMessagingBindingTest {
     private AnnotationMessagePublisher publisher;
 
     @Autowired
-    private ApplicationContext applicationContext;
+    private InputDestination inputDestination;
 
     @Autowired
-    private BinderFactory binderFactory;
-
-    @Autowired
-    private MessageCollector messageCollector;
+    private OutputDestination outputDestination;
 
     @Autowired
     private BlockingQueue<AnnotationMessage> receivedMessages;
@@ -70,10 +64,7 @@ class AnnotationMessagingBindingTest {
 
         assertTrue(publisher.send(message));
 
-        TestSupportBinder binder = (TestSupportBinder) binderFactory.getBinder("test", MessageChannel.class);
-        MessageChannel producerChannel = binder.getChannelForName("annotation-cache-out");
-        assertNotNull(producerChannel);
-        Message<?> published = messageCollector.forChannel(producerChannel).poll(5, TimeUnit.SECONDS);
+        Message<?> published = outputDestination.receive(TimeUnit.SECONDS.toMillis(5), "annotation-cache-out");
         assertNotNull(published);
         assertArrayEquals(original.toByteArray(), (byte[]) published.getPayload());
         assertEquals(PROTOBUF_CONTENT_TYPE, published.getHeaders().get(MessageHeaders.CONTENT_TYPE).toString());
@@ -85,8 +76,7 @@ class AnnotationMessagingBindingTest {
         Message<byte[]> encoded = MessageBuilder.withPayload(original.toByteArray())
                         .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.parseMimeType(PROTOBUF_CONTENT_TYPE)).build();
 
-        MessageChannel inputChannel = applicationContext.getBean("receive-in-0", MessageChannel.class);
-        inputChannel.send(encoded);
+        inputDestination.send(encoded, "annotation-cache-in");
 
         assertEquals(original, receivedMessages.poll(5, TimeUnit.SECONDS));
     }
@@ -98,7 +88,7 @@ class AnnotationMessagingBindingTest {
 
     @SpringBootConfiguration
     @EnableAutoConfiguration
-    @Import({AnnotationMessagingConfiguration.class, AnnotationMessagePublisher.class})
+    @Import({TestChannelBinderConfiguration.class, AnnotationMessagingConfiguration.class, AnnotationMessagePublisher.class})
     static class StreamTestApplication {
         @Bean
         BlockingQueue<AnnotationMessage> receivedMessages() {
