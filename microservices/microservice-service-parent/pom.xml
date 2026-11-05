@@ -25,6 +25,8 @@
         <version.log4j>2.26.1</version.log4j>
         <version.slf4j>2.0.18</version.slf4j>
         <version.snakeyaml>2.4</version.snakeyaml>
+        <version.dropwizard-metrics>4.2.40</version.dropwizard-metrics>
+        <version.ehcache>2.10.9.2</version.ehcache>
         <version.httpclient4>4.5.14</version.httpclient4>
         <version.httpcore4>4.4.16</version.httpcore4>
         <version.spring.boot>3.5.16</version.spring.boot>
@@ -55,6 +57,22 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${version.snakeyaml}</version>
+            </dependency>
+            <!-- spring-boot-dependencies 3.x no longer manages Dropwizard Metrics or Ehcache 2 -->
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-annotation</artifactId>
+                <version>${version.dropwizard-metrics}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${version.dropwizard-metrics}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache</artifactId>
+                <version>${version.ehcache}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
