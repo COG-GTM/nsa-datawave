@@ -53,15 +53,18 @@ public class ParquetIngestHelper extends ContentBaseIngestHelper {
             if (fieldValue == null) {
                 continue;
             }
-            // a scalar column configured as multi-valued is split exactly as the CSV helper splits it; repeated columns arrive already split
-            if (fields.get(fieldName).size() == 1 && helper.isMultiValuedField(fieldName) && fieldValue.contains(helper.getMultiValueSeparator())) {
+            // a scalar column configured as multi-valued is split exactly as CSVIngestHelper.processPreSplitField splits it (SOURCE:DESTINATION aliases,
+            // per-value cleaning, escaped separators); repeated columns arrive already split
+            if (fields.get(fieldName).size() == 1 && helper.isMultiValuedField(fieldName)) {
+                String singleFieldName = helper.usingMultiValuedFieldsDisallowlist() ? fieldName : helper.getMultiValuedFields().get(fieldName);
                 for (String value : fieldValue.split(helper.getEscapeSafeMultiValueSeparatorPattern())) {
-                    if (!value.isEmpty()) {
-                        results.put(fieldName, new NormalizedFieldAndValue(fieldName, value));
+                    value = helper.clean(singleFieldName, value);
+                    if (value != null && !value.isEmpty()) {
+                        results.put(singleFieldName, new NormalizedFieldAndValue(singleFieldName, helper.cleanEscapedMultivalueSeparators(value)));
                     }
                 }
             } else {
-                results.put(fieldName, new NormalizedFieldAndValue(fieldName, fieldValue));
+                results.put(fieldName, new NormalizedFieldAndValue(fieldName, helper.cleanEscapedMultivalueSeparators(fieldValue)));
             }
         }
 

@@ -109,7 +109,7 @@ public class ParquetIngestHelperTest {
 
     @Test
     public void testConfiguredMultiValuedScalarIsSplitLikeCsv() {
-        conf.set("myparquet.data.fields.multivalued", "STATE");
+        conf.set("myparquet.data.fields.multivalued", "STATE:REGION,TAGS");
         conf.set("myparquet.data.multivalued.separator", ";");
         TypeRegistry.reset();
         TypeRegistry.getInstance(conf);
@@ -117,10 +117,24 @@ public class ParquetIngestHelperTest {
         helper.setup(conf);
 
         Multimap<String,String> fields = record();
-        fields.put("STATE", "Texas;Oklahoma");
+        fields.put("STATE", "Texas ; Oklahoma");
+        fields.put("TAGS", "one\\;two;three");
         fields.put("CITY", "Paris;Dallas");
         Multimap<String,NormalizedContentInterface> fieldMap = helper.getEventFields(event(fields));
-        assertEquals(2, fieldMap.get("STATE").size());
+        // SOURCE:DESTINATION alias, per-value trimming
+        assertFalse(fieldMap.containsKey("STATE"));
+        assertEquals(2, fieldMap.get("REGION").size());
+        java.util.Set<String> regions = new java.util.TreeSet<>();
+        for (NormalizedContentInterface n : fieldMap.get("REGION")) {
+            regions.add(n.getEventFieldValue());
+        }
+        assertEquals(new java.util.TreeSet<>(java.util.Arrays.asList("Oklahoma", "Texas")), regions);
+        // escaped separators are not split and the escape is removed
+        java.util.Set<String> tags = new java.util.TreeSet<>();
+        for (NormalizedContentInterface n : fieldMap.get("TAGS")) {
+            tags.add(n.getEventFieldValue());
+        }
+        assertEquals(new java.util.TreeSet<>(java.util.Arrays.asList("one;two", "three")), tags);
         // CITY is not configured as multi-valued, so it is left intact
         assertEquals(1, fieldMap.get("CITY").size());
         assertEquals("Paris;Dallas", fieldMap.get("CITY").iterator().next().getEventFieldValue());
