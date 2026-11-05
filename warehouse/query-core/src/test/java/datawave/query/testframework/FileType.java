@@ -18,6 +18,7 @@ public enum FileType {
      * Indicates data stored as JSON files.
      */
     JSON(JsonTestFileLoader::new),
+    PARQUET(ParquetTestFileLoader::new),
 
     /**
      * Indicates data for grouping tests.

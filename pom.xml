@@ -67,6 +67,7 @@
         <version.arquillian-weld-embedded>2.1.0.Final</version.arquillian-weld-embedded>
         <version.assertj>3.20.2</version.assertj>
         <version.avro>1.11.4</version.avro>
+        <version.parquet>1.13.1</version.parquet>
         <version.awaitility>4.3.0</version.awaitility>
         <version.byte-buddy>1.14.11</version.byte-buddy>
         <version.caffeine>3.1.0</version.caffeine>

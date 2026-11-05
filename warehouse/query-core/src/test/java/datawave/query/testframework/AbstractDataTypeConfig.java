@@ -41,6 +41,9 @@ import datawave.ingest.json.mr.handler.ContentJsonColumnBasedHandler;
 import datawave.ingest.json.mr.input.JsonRecordReader;
 import datawave.ingest.mapreduce.handler.shard.AbstractColumnBasedHandler;
 import datawave.ingest.mapreduce.handler.shard.ShardedDataTypeHandler;
+import datawave.ingest.parquet.config.helper.ParquetIngestHelper;
+import datawave.ingest.parquet.mr.handler.ContentParquetColumnBasedHandler;
+import datawave.ingest.parquet.mr.input.ParquetRecordReader;
 import datawave.policy.IngestPolicyEnforcer;
 
 /**
@@ -180,6 +183,12 @@ public abstract class AbstractDataTypeConfig implements DataTypeHadoopConfig {
                 this.hConf.set(this.dataType + TypeRegistry.INGEST_HELPER, JsonIngestHelper.class.getName());
                 this.hConf.set(this.dataType + TypeRegistry.RAW_READER, JsonRecordReader.class.getName());
                 this.hConf.set(this.dataType + TypeRegistry.HANDLER_CLASSES, ContentJsonColumnBasedHandler.class.getName());
+                break;
+            case PARQUET:
+                // raw data for Parquet is compared against a CSV twin by the equivalence tests rather than loaded into a manager
+                this.hConf.set(this.dataType + TypeRegistry.INGEST_HELPER, ParquetIngestHelper.class.getName());
+                this.hConf.set(this.dataType + TypeRegistry.RAW_READER, ParquetRecordReader.class.getName());
+                this.hConf.set(this.dataType + TypeRegistry.HANDLER_CLASSES, ContentParquetColumnBasedHandler.class.getName());
                 break;
             case GROUPING:
                 // nothing to do here
