@@ -12,6 +12,7 @@ import org.apache.accumulo.core.client.BatchScanner;
 import org.apache.accumulo.core.client.ScannerBase;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.commons.collections4.iterators.TransformIterator;
+import org.springframework.beans.factory.InitializingBean;
 
 import datawave.audit.SelectorExtractor;
 import datawave.core.query.configuration.GenericQueryConfiguration;
@@ -24,7 +25,7 @@ import datawave.webservice.common.audit.Auditor.AuditType;
 import datawave.webservice.common.connection.AccumuloClientConfiguration;
 import datawave.webservice.query.result.event.ResponseObjectFactory;
 
-public abstract class BaseQueryLogic<T> implements QueryLogic<T> {
+public abstract class BaseQueryLogic<T> implements QueryLogic<T>, InitializingBean {
 
     private GenericQueryConfiguration baseConfig;
     private String logicName = "No logicName was set";
@@ -299,8 +300,18 @@ public abstract class BaseQueryLogic<T> implements QueryLogic<T> {
         return auditType;
     }
 
+    /**
+     * Replaces the {@code @Required} check Spring 6 removed: a Spring-managed query logic without an auditType fails at startup instead of when the first
+     * request dereferences it.
+     */
     @Override
-    // enforces that the unit tests will fail and the application will not deploy unless this property is set
+    public void afterPropertiesSet() {
+        if (auditType == null) {
+            throw new IllegalStateException("auditType must be set on query logic " + getClass().getName());
+        }
+    }
+
+    @Override
     public void setAuditType(AuditType auditType) {
         this.auditType = auditType;
     }

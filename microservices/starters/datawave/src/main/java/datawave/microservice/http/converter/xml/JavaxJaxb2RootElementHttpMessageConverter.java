@@ -1,9 +1,11 @@
 package datawave.microservice.http.converter.xml;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -11,8 +13,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.sax.SAXSource;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.http.HttpInputMessage;
@@ -23,6 +27,9 @@ import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.lang.NonNull;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * Reads and writes {@code application/xml} and {@code text/xml} bodies for classes annotated with the <em>javax</em> JAXB {@link XmlRootElement} or
@@ -58,13 +65,13 @@ public class JavaxJaxb2RootElementHttpMessageConverter extends AbstractHttpMessa
     protected Object readInternal(@NonNull Class<?> clazz, @NonNull HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
         try {
             Unmarshaller unmarshaller = getJaxbContext(clazz).createUnmarshaller();
-            StreamSource source = new StreamSource(inputMessage.getBody());
+            SAXSource source = new SAXSource(secureXmlReader(), new InputSource(inputMessage.getBody()));
             if (clazz.isAnnotationPresent(XmlRootElement.class)) {
                 return unmarshaller.unmarshal(source);
             }
             JAXBElement<?> element = unmarshaller.unmarshal(source, clazz);
             return element.getValue();
-        } catch (JAXBException e) {
+        } catch (JAXBException | ParserConfigurationException | SAXException e) {
             throw new HttpMessageNotReadableException("Could not unmarshal to [" + clazz + "]: " + e.getMessage(), e, inputMessage);
         }
     }
@@ -81,6 +88,22 @@ public class JavaxJaxb2RootElementHttpMessageConverter extends AbstractHttpMessa
         } catch (JAXBException e) {
             throw new HttpMessageNotWritableException("Could not marshal [" + o + "]: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Mirrors Spring's own Jaxb2RootElementHttpMessageConverter defaults: no DTDs, no external entities, so a crafted request body cannot read files or
+     * reach other hosts (XXE).
+     */
+    private static XMLReader secureXmlReader() throws ParserConfigurationException, SAXException {
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        XMLReader reader = factory.newSAXParser().getXMLReader();
+        reader.setEntityResolver((publicId, systemId) -> new InputSource(new StringReader("")));
+        return reader;
     }
 
     private JAXBContext getJaxbContext(Class<?> clazz) {
