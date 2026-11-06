@@ -320,7 +320,7 @@ public class ReplayClient {
             String errorMessage = String.format("%s request failed. Http Status: (%s, %s)",
                     replayMethod.getName(),
                     response.getStatusCodeValue(),
-                    response.getStatusCode().getReasonPhrase());
+                    HttpStatus.valueOf(response.getStatusCode().value()).getReasonPhrase());
             log.error(errorMessage);
             throw new RuntimeException(errorMessage);
         }

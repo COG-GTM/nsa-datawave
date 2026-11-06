@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.nsa.datawave.microservice</groupId>
         <artifactId>datawave-microservice-parent</artifactId>
-        <version>4.0.14</version>
+        <version>4.0.14-SNAPSHOT</version>
         <relativePath>../microservice-parent</relativePath>
     </parent>
     <artifactId>datawave-microservice-service-parent</artifactId>
@@ -21,12 +21,17 @@
         <!-- delimiter that doesn't clash with Spring ${} placeholders -->
         <resource.delimiter>@</resource.delimiter>
         <!-- 2.14.X is the maximum version of jackson without snakeyaml version 2 causing spring-boot 2.7.1 conflict -->
-        <version.jackson>2.14.3</version.jackson>
+        <version.jackson>2.21.4</version.jackson>
         <version.log4j>2.26.1</version.log4j>
-        <version.slf4j>2.0.17</version.slf4j>
-        <version.snakeyaml>1.33</version.snakeyaml>
-        <version.spring.boot>2.7.1</version.spring.boot>
-        <version.spring.cloud>2021.0.3</version.spring.cloud>
+        <version.slf4j>2.0.18</version.slf4j>
+        <version.snakeyaml>2.4</version.snakeyaml>
+        <version.jakarta.xml.bind>2.3.3</version.jakarta.xml.bind>
+        <version.jaxb-impl>2.3.9</version.jaxb-impl>
+        <version.dropwizard-metrics>4.2.40</version.dropwizard-metrics>
+        <version.httpclient4>4.5.14</version.httpclient4>
+        <version.httpcore4>4.4.16</version.httpcore4>
+        <version.spring.boot>3.5.16</version.spring.boot>
+        <version.spring.cloud>2025.0.3</version.spring.cloud>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -53,6 +58,49 @@
                 <groupId>org.yaml</groupId>
                 <artifactId>snakeyaml</artifactId>
                 <version>${version.snakeyaml}</version>
+            </dependency>
+            <!-- JAXB 2.3 keeps the javax.xml.bind package the DataWave response classes are annotated with;
+                 spring-boot-dependencies 3.x would otherwise manage 4.x (jakarta.xml.bind) -->
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${version.jakarta.xml.bind}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${version.jaxb-impl}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${version.jaxb-impl}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>txw2</artifactId>
+                <version>${version.jaxb-impl}</version>
+            </dependency>
+            <!-- spring-boot-dependencies 3.x no longer manages Dropwizard Metrics or Apache HttpClient 4 -->
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-annotation</artifactId>
+                <version>${version.dropwizard-metrics}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.dropwizard.metrics</groupId>
+                <artifactId>metrics-core</artifactId>
+                <version>${version.dropwizard-metrics}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${version.httpclient4}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${version.httpcore4}</version>
             </dependency>
             <!-- override the jackson in spring-boot-dependencies with our own version -->
             <dependency>
@@ -104,7 +152,7 @@
         <dependency>
             <groupId>com.github.therapi</groupId>
             <artifactId>therapi-runtime-javadoc-scribe</artifactId>
-            <version>0.13.0</version>
+            <version>0.15.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

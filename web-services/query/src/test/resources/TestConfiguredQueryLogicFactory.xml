@@ -30,11 +30,13 @@
 	</bean>
 
 	<bean id="AdminQueryLogic" class="datawave.webservice.query.logic.TestQueryLogic">
+		<property name="auditType" value="NONE" />
 		<property name="logicName" value="Admin logic"/>
 		<property name="requiredRoles" ref="adminRoles" />
 	</bean>
 
 	<bean id="UserQueryLogic" class="datawave.webservice.query.logic.TestQueryLogic">
+		<property name="auditType" value="NONE" />
 		<property name="logicName" value="User logic"/>
 		<property name="requiredRoles" ref="userRoles"/>
 	</bean>

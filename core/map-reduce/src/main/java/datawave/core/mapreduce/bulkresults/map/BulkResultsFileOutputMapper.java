@@ -84,8 +84,8 @@ public class BulkResultsFileOutputMapper extends ApplicationContextAwareMapper<K
         QueryLogic<?> logic = (QueryLogic<?>) super.applicationContext.getBean(logicName);
         t = logic.getEnrichedTransformer(query);
 
-        Assert.notNull(logic.getMarkingFunctions());
-        Assert.notNull(logic.getResponseObjectFactory());
+        Assert.notNull(logic.getMarkingFunctions(), "markingFunctions must be set on the query logic");
+        Assert.notNull(logic.getResponseObjectFactory(), "responseObjectFactory must be set on the query logic");
         this.format = SerializationFormat.valueOf(context.getConfiguration().get(RESULT_SERIALIZATION_FORMAT));
     }
 

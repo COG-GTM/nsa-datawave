@@ -37,8 +37,9 @@ public class AccumuloConfiguration {
     public static class AccumuloRequiredCondition extends SpringBootCondition {
         @Override
         public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+            // Read the flag as text: an unparseable value must surface through the writer-flag validation, not as a condition error
             boolean required = AnnotationRole.from(context.getEnvironment()).includesApi()
-                            || context.getEnvironment().getProperty(ACCUMULO_WRITER_ENABLED, Boolean.class, false);
+                            || Boolean.parseBoolean(context.getEnvironment().getProperty(ACCUMULO_WRITER_ENABLED, "false").trim());
             return new ConditionOutcome(required, "Accumulo is required for API reads or an enabled Accumulo writer");
         }
     }

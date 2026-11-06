@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.nsa.datawave.microservice</groupId>
         <artifactId>datawave-microservice-service-parent</artifactId>
-        <version>5.0.15</version>
+        <version>5.0.16-SNAPSHOT</version>
         <relativePath>../../../microservice-service-parent/pom.xml</relativePath>
     </parent>
     <artifactId>dictionary-service</artifactId>
@@ -28,17 +28,19 @@
         <version.commons-collections>3.2.2</version.commons-collections>
         <version.commons-lang3>3.20.0</version.commons-lang3>
         <version.curator>5.2.0</version.curator>
-        <version.datawave>8.0.0</version.datawave>
-        <version.datawave.authorization-api>4.0.5</version.datawave.authorization-api>
-        <version.datawave.dictionary-api>4.0.11</version.datawave.dictionary-api>
-        <version.datawave.starter>4.0.13</version.datawave.starter>
-        <version.datawave.starter-metadata>3.0.7</version.datawave.starter-metadata>
+        <version.datawave>8.6.0-SNAPSHOT</version.datawave>
+        <version.datawave.authorization-api>4.0.7-SNAPSHOT</version.datawave.authorization-api>
+        <version.datawave.dictionary-api>4.0.12-SNAPSHOT</version.datawave.dictionary-api>
+        <version.datawave.starter>4.0.14-SNAPSHOT</version.datawave.starter>
+        <version.datawave.starter-metadata>3.0.8-SNAPSHOT</version.datawave.starter-metadata>
         <version.guava>31.1-jre</version.guava>
         <version.hadoop>3.3.4</version.hadoop>
-        <version.in-memory-accumulo>4.0.6</version.in-memory-accumulo>
+        <version.in-memory-accumulo>4.0.7-SNAPSHOT</version.in-memory-accumulo>
         <!-- version set in datawave-microservice-parent, but can be overridden here -->
         <!-- 2.14.X is the maximum version of jackson without snakeyaml version 2 causing spring-boot 2.7.1 conflict -->
         <version.jackson>2.14.3</version.jackson>
+        <!-- JAXB 2.3 keeps the javax.xml.bind package the DataWave response classes are annotated with; spring-boot-dependencies 3.x would otherwise manage 4.x (jakarta.xml.bind) -->
+        <version.jakarta>2.3.3</version.jakarta>
         <version.jaxb-impl>2.3.3</version.jaxb-impl>
         <!-- dependency declared in datawave-microservice-parent, but the version can be overridden here -->
         <version.log4j>2.26.1</version.log4j>
@@ -67,6 +69,11 @@
                 <groupId>com.sun.xml.bind</groupId>
                 <artifactId>jaxb-impl</artifactId>
                 <version>${version.jaxb-impl}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${version.jakarta}</version>
             </dependency>
             <dependency>
                 <groupId>commons-collections</groupId>
@@ -134,7 +141,7 @@
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
@@ -271,7 +278,7 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>

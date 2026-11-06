@@ -246,7 +246,7 @@
                     <threadCountMethods>1</threadCountMethods>
                     <threadCountSuites>0</threadCountSuites>
                     <argLine>@{argLine} -XX:+TieredCompilation -XX:TieredStopAtLevel=1  -Dfile.encoding=UTF8 -Duser.timezone=GMT -Xmx${surefire.maxMemory} -Dapple.awt.UIElement=true -Djava.security.krb5.realm= -Djava.security.krb5.kdc=
-                        --add-opens java.xml/jdk.xml.internal=ALL-UNNAMED</argLine>
+                        ${datawave.jdk17.add-opens}</argLine>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <runOrder>random</runOrder>
                     <!-- write temporary files to the target directory.

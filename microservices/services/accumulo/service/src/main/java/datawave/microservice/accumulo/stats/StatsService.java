@@ -121,7 +121,7 @@ public class StatsService implements InitializingBean {
                 response = (StatsResponse) umHandler.getResult();
             } else {
                 String errorMessage = String.format("Monitor request failed. Http Status: (%s, %s)", monitorResponse.getStatusCodeValue(),
-                                monitorResponse.getStatusCode().getReasonPhrase());
+                                HttpStatus.valueOf(monitorResponse.getStatusCode().value()).getReasonPhrase());
                 log.error(errorMessage);
                 response.addException(new RuntimeException(errorMessage));
 

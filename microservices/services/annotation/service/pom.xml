@@ -4,7 +4,7 @@
     <parent>
         <groupId>gov.nsa.datawave.microservice</groupId>
         <artifactId>datawave-microservice-service-parent</artifactId>
-        <version>5.0.15</version>
+        <version>5.0.16-SNAPSHOT</version>
         <relativePath>../../../microservice-service-parent/pom.xml</relativePath>
     </parent>
     <artifactId>annotation-service</artifactId>
@@ -18,23 +18,26 @@
         <url>https://github.com/NationalSecurityAgency/datawave</url>
     </scm>
     <properties>
+        <!-- RabbitMQ management HTTP client used by RabbitHealthChecker; spring-cloud-stream-binder-rabbit 4.x no longer brings it in -->
+        <!-- hop 4.x is the last line with a RestTemplate layer (hop 5 is JDK HttpClient only); it must be configured with SimpleRestTemplateConfigurator because its HttpComponents configurator uses the HttpClient 4 request factory that Spring 6 removed -->
+        <version.rabbit.http-client>4.0.0</version.rabbit.http-client>
         <start-class>datawave.microservice.annotation.AnnotationService</start-class>
         <version.accumulo>2.1.5</version.accumulo>
-        <version.annotation-api>1.0.0</version.annotation-api>
-        <version.annotation-messaging>1.0.0</version.annotation-messaging>
+        <version.annotation-api>1.0.1-SNAPSHOT</version.annotation-api>
+        <version.annotation-messaging>1.0.1-SNAPSHOT</version.annotation-messaging>
         <version.commons-io>2.18.0</version.commons-io>
         <version.commons-lang3>3.20.0</version.commons-lang3>
         <version.commons-pool>2.11.1</version.commons-pool>
         <version.commons-text>1.11.0</version.commons-text>
         <version.curator>5.9.0</version.curator>
         <version.datawave-commons-security>${version.datawave}</version.datawave-commons-security>
-        <version.datawave>8.2.0</version.datawave>
-        <version.datawave.hazelcast-client>4.0.7</version.datawave.hazelcast-client>
-        <version.datawave.hazelcast-common>4.0.7</version.datawave.hazelcast-common>
-        <version.datawave.starter>4.0.13</version.datawave.starter>
+        <version.datawave>8.6.0-SNAPSHOT</version.datawave>
+        <version.datawave.hazelcast-client>4.0.8-SNAPSHOT</version.datawave.hazelcast-client>
+        <version.datawave.hazelcast-common>4.0.8-SNAPSHOT</version.datawave.hazelcast-common>
+        <version.datawave.starter>4.0.14-SNAPSHOT</version.datawave.starter>
         <version.guava>31.1-jre</version.guava>
         <version.hadoop>3.4.1</version.hadoop>
-        <version.in-memory-accumulo>4.0.6</version.in-memory-accumulo>
+        <version.in-memory-accumulo>4.0.7-SNAPSHOT</version.in-memory-accumulo>
         <version.log4j>2.26.1</version.log4j>
         <version.log4j.latest.banned>2.25.3</version.log4j.latest.banned>
         <version.netty>4.1.105.Final</version.netty>
@@ -45,6 +48,11 @@
     </properties>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>http-client</artifactId>
+                <version>${version.rabbit.http-client}</version>
+            </dependency>
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-bom</artifactId>
@@ -257,7 +265,7 @@
             </dependency>
             <dependency>
                 <groupId>io.swagger.core.v3</groupId>
-                <artifactId>swagger-annotations</artifactId>
+                <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${version.swagger}</version>
             </dependency>
             <dependency>
@@ -491,6 +499,10 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>http-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

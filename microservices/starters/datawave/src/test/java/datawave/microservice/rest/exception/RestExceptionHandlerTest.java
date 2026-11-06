@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,7 +48,7 @@ public class RestExceptionHandlerTest {
         WebClient webClient = webClientBuilder.baseUrl("https://localhost:" + webServicePort + "/starter-test/v1").build();
 
         ResponseEntity<VoidResponse> responseEntity = webClient.get().uri("/testSingleQueryException").retrieve()
-                        .onStatus(HttpStatus::isError, response -> Mono.empty()).toEntity(VoidResponse.class).block();
+                        .onStatus(HttpStatusCode::isError, response -> Mono.empty()).toEntity(VoidResponse.class).block();
         assertNotNull(responseEntity);
         assertEquals(400, responseEntity.getStatusCodeValue());
 
@@ -73,7 +74,7 @@ public class RestExceptionHandlerTest {
         WebClient webClient = webClientBuilder.baseUrl("https://localhost:" + webServicePort + "/starter-test/v1").build();
 
         ResponseEntity<VoidResponse> responseEntity = webClient.get().uri("/testNestedQueryException").retrieve()
-                        .onStatus(HttpStatus::isError, response -> Mono.empty()).toEntity(VoidResponse.class).block();
+                        .onStatus(HttpStatusCode::isError, response -> Mono.empty()).toEntity(VoidResponse.class).block();
         assertNotNull(responseEntity);
         assertEquals(500, responseEntity.getStatusCodeValue());
 
@@ -99,7 +100,7 @@ public class RestExceptionHandlerTest {
         WebClient webClient = webClientBuilder.baseUrl("https://localhost:" + webServicePort + "/starter-test/v1").build();
 
         ResponseEntity<VoidResponse> responseEntity = webClient.get().uri("/testNonQueryException").retrieve()
-                        .onStatus(HttpStatus::isError, response -> Mono.empty()).toEntity(VoidResponse.class).block();
+                        .onStatus(HttpStatusCode::isError, response -> Mono.empty()).toEntity(VoidResponse.class).block();
         assertNotNull(responseEntity);
         assertEquals(500, responseEntity.getStatusCodeValue());
 

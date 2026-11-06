@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -18,7 +17,6 @@ import datawave.microservice.dictionary.data.DataDictionary;
 import datawave.microservice.dictionary.data.DataDictionaryImpl;
 import datawave.microservice.dictionary.edge.EdgeDictionary;
 import datawave.microservice.dictionary.edge.EdgeDictionaryImpl;
-import datawave.microservice.metadata.MetadataDescriptionsHelper;
 import datawave.microservice.metadata.MetadataDescriptionsHelperFactory;
 import datawave.query.util.MetadataHelperFactory;
 import datawave.webservice.dictionary.data.DefaultDataDictionary;
@@ -41,14 +39,6 @@ public class DictionaryServiceConfiguration {
     @ConditionalOnMissingBean
     public UserAuthFunctions userAuthFunctions() {
         return UserAuthFunctions.getInstance();
-    }
-
-    @Bean
-    @Scope("prototype")
-    @ConditionalOnMissingBean
-    public MetadataDescriptionsHelper<DefaultDescription> metadataHelperWithDescriptions(MarkingFunctions<?> markingFunctions,
-                    ResponseObjectFactory<DefaultDescription,DefaultDataDictionary,DefaultMetadataField,DefaultDictionaryField,DefaultFields> responseObjectFactory) {
-        return new MetadataDescriptionsHelper<>(markingFunctions, responseObjectFactory);
     }
 
     @Bean
