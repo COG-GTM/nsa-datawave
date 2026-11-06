@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import datawave.core.query.logic.composite.CompositeQueryLogic;
+import datawave.core.query.logic.lookup.uid.LookupUIDQueryLogic;
 import datawave.webservice.common.audit.Auditor.AuditType;
 
 /**
@@ -24,5 +25,15 @@ public class BaseQueryLogicAuditTypeTest {
         BaseQueryLogic<?> logic = new CompositeQueryLogic();
         logic.setAuditType(AuditType.NONE);
         assertDoesNotThrow(logic::afterPropertiesSet);
+    }
+
+    @Test
+    public void delegatingLogicUsesTheDelegatesAuditType() {
+        CompositeQueryLogic delegate = new CompositeQueryLogic();
+        LookupUIDQueryLogic<Object> lookup = new LookupUIDQueryLogic<>(delegate);
+        assertThrows(IllegalStateException.class, lookup::afterPropertiesSet);
+        // the lookup wrapper's setter configures the delegate, not its own field, as the Spring XML definitions rely on
+        lookup.setAuditType(AuditType.NONE);
+        assertDoesNotThrow(lookup::afterPropertiesSet);
     }
 }

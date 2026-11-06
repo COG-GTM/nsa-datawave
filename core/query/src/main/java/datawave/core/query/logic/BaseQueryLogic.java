@@ -306,7 +306,8 @@ public abstract class BaseQueryLogic<T> implements QueryLogic<T>, InitializingBe
      */
     @Override
     public void afterPropertiesSet() {
-        if (auditType == null) {
+        // the effective value: delegating logics (LookupQueryLogic, SSDeepDiscoveryQueryLogic) route the setter and getter to a delegate
+        if (getAuditType() == null) {
             throw new IllegalStateException("auditType must be set on query logic " + getClass().getName());
         }
     }
