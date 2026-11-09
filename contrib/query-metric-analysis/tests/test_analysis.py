@@ -27,6 +27,22 @@ def record(qid="q1", timing=100, **overrides):
 
 
 class AggregationTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("node"), "Node required for browser date bounds")
+    def test_browser_date_bounds_cover_selected_days(self):
+        code = """
+const a = require(process.argv[1]);
+console.log(JSON.stringify([
+  a.dateRange('2026-09-01', '2026-09-30'),
+  a.dateRange('2026-09-18', '2026-09-18'),
+  a.dateRange('2026-09-30', '2026-09-01'),
+  a.dateRange('', '2026-09-30')
+]));
+"""
+        proc = subprocess.run(["node", "-e", code, str(ROOT / "report.js")], text=True, capture_output=True, check=True)
+        self.assertEqual(json.loads(proc.stdout), [
+            ["2026-08-31T12:00:00.000Z", "2026-09-30T12:00:00.000Z"],
+            ["2026-09-17T12:00:00.000Z", "2026-09-18T12:00:00.000Z"], None, None])
+
     def test_percentiles_and_denominators(self):
         frame, _ = normalize([record(str(i), value) for i, value in enumerate([0, 10, 20, 30, 40, None, -1, -5])])
         result = summarize(frame)

@@ -17,6 +17,11 @@
   function select(rows, start, end, logic) {
     return rows.filter(r => r.day >= start && r.day <= end && (!logic || r.queryLogic === logic));
   }
+  function dateRange(start, end) {
+    const first = Date.parse(start), last = Date.parse(end);
+    if (!Number.isFinite(first) || !Number.isFinite(last) || first > last) return null;
+    return [new Date(first - 43200000).toISOString(), new Date(last + 43200000).toISOString()];
+  }
   function ranks(values) {
     const sorted = values.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]);
     const result = Array(values.length);
@@ -37,7 +42,7 @@
     for (let i = 0; i < x.length; i++) {xy += (x[i] - mean) * (y[i] - mean); xx += (x[i] - mean) ** 2; yy += (y[i] - mean) ** 2;}
     return {pairs: pairs.length, rho: xx && yy ? xy / Math.sqrt(xx * yy) : null};
   }
-  root.MetricAnalysis = {quantile, summary, select, correlation};
+  root.MetricAnalysis = {quantile, summary, select, correlation, dateRange};
   if (typeof module !== "undefined") module.exports = root.MetricAnalysis;
 })(typeof window === "undefined" ? globalThis : window);
 
@@ -45,7 +50,7 @@ if (typeof document !== "undefined") {
   "use strict";
   const payload = JSON.parse(document.getElementById("payload").textContent);
   const rows = payload.data.data.map(values => Object.fromEntries(payload.data.columns.map((c, i) => [c, values[i]])));
-  const {summary, select, quantile, correlation} = window.MetricAnalysis;
+  const {summary, select, quantile, correlation, dateRange} = window.MetricAnalysis;
   const $ = id => document.getElementById(id);
   const fmt = (v, digits = 0) => Number.isFinite(v) ? v.toLocaleString("en-US", {maximumFractionDigits: digits}) : "—";
   const pct = v => Number.isFinite(v) ? `${(v * 100).toFixed(2)}%` : "—";
@@ -77,12 +82,15 @@ if (typeof document !== "undefined") {
   function changeMark() {
     if (!change || change.date < $("start").value || change.date > $("end").value) return {};
     return {shapes: [{type: "line", x0: change.date, x1: change.date, y0: 0, y1: 1, yref: "paper", line: {color: "#9b3a18", dash: "dot", width: 2}}],
-      annotations: [{x: change.date, y: 1, yref: "paper", text: `Suspected change · ${change.date}`, showarrow: true, ax: 80, ay: -20, font: {color: "#9b3a18"}}]};
+      annotations: [{x: 1, xref: "paper", xanchor: "right", y: 1.02, yref: "paper", yanchor: "bottom",
+        text: `Suspected change · ${change.date}`, showarrow: false, font: {color: "#9b3a18"}}]};
   }
   function render() {
     const start = $("start").value, end = $("end").value, logic = $("logic").value;
     const selected = start && end && start <= end ? select(rows, start, end, logic) : [];
     const stats = summary(selected), dates = start && end && start <= end ? daysBetween(start, end) : [];
+    const dateAxis = {type: "date", title: "Query creation date (UTC)", range: dateRange(start, end) || dateRange(startDay, endDay),
+      autorange: false, nticks: 5, tickformat: "%b %d", tickangle: 0};
     const visible = logic ? [logic] : logics;
     $("scope").textContent = `${selected.length.toLocaleString()} queries · ${start || "no start"} to ${end || "no end"} UTC · ${logic || "all query logic"}`;
     $("empty").hidden = !!selected.length;
@@ -101,8 +109,8 @@ if (typeof document !== "undefined") {
       ...[["medianMs", "Median", "#0072B2", "solid"], ["p95Ms", "95th percentile", "#D55E00", "dash"]].map(([key, name, c, dash]) =>
         ({type: "scatter", mode: "lines+markers", name, x: dates, y: daily.map(r => r[key]), line: {color: c, dash},
           customdata: daily.map(r => [r.validTiming, r.queries]), hovertemplate: "%{x}<br>%{y:,.1f} ms<br>Timed: %{customdata[0]} / %{customdata[1]} queries<extra>%{fullData.name}</extra>"}))];
-    const promises = [Plotly.react("trend", trend, layout("Query volume and first-page return time", {
-      xaxis: {type: "date", title: "Query creation date (UTC)"}, yaxis: {title: "First-page return time (ms)", domain: [.35, 1], rangemode: "tozero"},
+    const promises = [Plotly.react("trend", trend, layout("Query volume and first-page timing", {
+      xaxis: {...dateAxis}, yaxis: {title: "First-page return time (ms)", domain: [.35, 1], rangemode: "tozero"},
       yaxis2: {title: "Queries", domain: [0, .19], rangemode: "tozero"}, ...changeMark()}), config)];
     const comparisons = [], boxes = [];
     for (const name of visible) {
@@ -114,14 +122,17 @@ if (typeof document !== "undefined") {
         comparisons.push([name, period, fmt(stat.queries), fmt(calendarDays ? stat.queries / calendarDays : null, 1),
           `${fmt(stat.validTiming)} / ${fmt(stat.queries)}`, fmt(stat.medianMs, 1), fmt(stat.p95Ms, 1), `${stat.errors} / ${stat.errorKnown}`, pct(stat.errorRate)]);
         const times = part.map(r => r.firstPageReturnTimeMs).filter(Number.isFinite);
-        if (times.length) boxes.push({type: "box", name: `${esc(name)} · ${period}`, x: [`${esc(name)} · ${period}`], q1: [quantile(times, .25)], median: [stat.medianMs], q3: [quantile(times, .75)],
+        if (times.length) boxes.push({type: "box", orientation: "h", name: `${esc(name)} · ${period}`, y: [`${esc(name)} · ${period}`], q1: [quantile(times, .25)], median: [stat.medianMs], q3: [quantile(times, .75)],
           lowerfence: [quantile(times, .05)], upperfence: [stat.p95Ms], boxpoints: false,
           marker: {color: color(name)}, fillcolor: period === "Before" ? "rgba(255,255,255,0.7)" : color(name),
           line: {width: 2}, customdata: [times.length], hovertemplate: `${esc(name)} · ${period}<br>Timed queries: ${times.length}<br>Median: ${fmt(stat.medianMs, 1)} ms<br>p95: ${fmt(stat.p95Ms, 1)} ms<extra></extra>`});
       }
     }
     table("comparison", ["Query logic", "Period", "Queries", "Queries/day", "Timed / all", "Median (ms)", "p95 (ms)", "Errors / known", "Error rate"], comparisons);
-    promises.push(Plotly.react("distribution", boxes, layout("Timing distributions by query logic", {showlegend: false, yaxis: {title: "First-page return time (ms)", rangemode: "tozero"}, xaxis: {type: "category", tickangle: -15}, margin: {t: 75, l: 70, r: 35, b: 100}}), config));
+    promises.push(Plotly.react("distribution", boxes, layout("First-page timing distributions", {showlegend: false,
+      xaxis: {title: "First-page return time (ms)", rangemode: "tozero", nticks: 5},
+      yaxis: {type: "category", autorange: "reversed", tickvals: boxes.map(b => b.name), ticktext: boxes.map(b => b.name.replace(" · ", "<br>")), tickfont: {size: 11}},
+      margin: {t: 75, l: 110, r: 20, b: 75}}), config));
     const errors = visible.map((name, i) => {
       const group = new Map(dates.map(d => [d, []]));
       selected.filter(r => r.queryLogic === name).forEach(r => group.get(r.day)?.push(r));
@@ -131,7 +142,7 @@ if (typeof document !== "undefined") {
         customdata: data.map(r => [r.errors, r.errorKnown, r.queries]),
         hovertemplate: "%{x}<br>%{y:.2f}%<br>Errors: %{customdata[0]} / %{customdata[1]} known<br>Queries: %{customdata[2]}<extra>%{fullData.name}</extra>"};
     });
-    promises.push(Plotly.react("errors", errors, layout("Recorded errors by query logic", {xaxis: {type: "date", title: "Query creation date (UTC)"}, yaxis: {title: "Recorded error rate (%)", rangemode: "tozero"}, ...changeMark()}), config));
+    promises.push(Plotly.react("errors", errors, layout("Recorded errors by query logic", {xaxis: {...dateAxis}, yaxis: {title: "Recorded error rate (%)", rangemode: "tozero"}, ...changeMark()}), config));
     const xfield = $("scatter-field").value;
     const eligible = selected.filter(r => Number.isFinite(r[xfield]) && Number.isFinite(r.firstPageReturnTimeMs));
     const stride = Math.max(1, Math.ceil(eligible.length / 1500));
