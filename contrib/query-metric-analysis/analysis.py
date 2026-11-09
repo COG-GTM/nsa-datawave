@@ -15,6 +15,9 @@ NUMERIC_FIELDS = ("setupTime", "createCallTime", "loginTime", "numResults", "num
 TIMINGS = {"setupTime", "createCallTime", "loginTime", "firstPageReturnTimeMs"}
 FINAL = {"CLOSED", "CANCELLED", "MAXRESULTS", "NEXTTIMEOUT", "TIMEOUT", "SHUTDOWN"}
 LIFECYCLES = FINAL | {"NONE", "DEFINED", "INITIALIZED", "RESULTS", "MAXWORK"}
+SUMMARY_COLUMNS = ["queries", "validTiming", "medianMs", "p95Ms", "errors", "errorKnown", "errorRate"]
+COMPARISON_COLUMNS = ["queryLogic", "period", "calendarDays", "queriesPerDay", *SUMMARY_COLUMNS]
+CANDIDATE_COLUMNS = ["queryLogic", "date", "fitImprovement", "dailyMedianRatio", "beforeDays", "afterDays", "flagged"]
 
 
 def read_records(path):
@@ -182,7 +185,7 @@ def detect_change(daily):
 def comparison_table(frame, change):
     rows = []
     if not change:
-        return pd.DataFrame()
+        return pd.DataFrame(columns=COMPARISON_COLUMNS)
     start, end = pd.Timestamp(frame.day.min()), pd.Timestamp(frame.day.max())
     split = pd.Timestamp(change["date"])
     for logic, group in frame.groupby("queryLogic"):
@@ -190,7 +193,7 @@ def comparison_table(frame, change):
                                    ("After", group[group.day >= change["date"]], (end - split).days + 1)):
             rows.append({"queryLogic": logic, "period": period, "calendarDays": days,
                          "queriesPerDay": len(part) / days if days > 0 else None, **summarize(part)})
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows, columns=COMPARISON_COLUMNS)
 
 
 def correlation_table(frame, change):
@@ -245,4 +248,4 @@ def analyze(frame, raw):
     summary = {"quality": raw, "summary": summarize(frame), "change": change, "candidates": candidates,
                "findings": findings, "dateRange": [frame.day.min(), frame.day.max()]}
     return summary, {"daily": daily, "before_after": comparison, "correlations": correlations,
-                     "quality": quality_table(frame), "change_candidates": pd.DataFrame(candidates)}
+                     "quality": quality_table(frame), "change_candidates": pd.DataFrame(candidates, columns=CANDIDATE_COLUMNS)}

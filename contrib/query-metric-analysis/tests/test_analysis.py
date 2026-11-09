@@ -12,7 +12,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from analysis import analyze, detect_change, measurement, normalize, read_records, summarize
+from analysis import CANDIDATE_COLUMNS, COMPARISON_COLUMNS, analyze, detect_change, measurement, normalize, read_records, summarize
 from generate import generate
 from render import html_report
 
@@ -215,6 +215,12 @@ console.log(JSON.stringify(input.filters.map(f => {const rows = a.select(input.r
             self.assertEqual(result["summary"]["validTiming"], 1)
             self.assertIn("LOCAL EXPORT", (output / "report.html").read_text())
             self.assertEqual(len(list(output.glob("*.png"))), 4)
+            comparison = pd.read_csv(output / "before_after.csv")
+            candidates = pd.read_csv(output / "change_candidates.csv")
+            self.assertEqual(list(comparison.columns), ["provenance", *COMPARISON_COLUMNS])
+            self.assertEqual(list(candidates.columns), ["provenance", *CANDIDATE_COLUMNS])
+            self.assertTrue(comparison.empty)
+            self.assertTrue(candidates.empty)
 
 
 if __name__ == "__main__":
