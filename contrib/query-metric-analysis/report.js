@@ -114,7 +114,7 @@ if (typeof document !== "undefined") {
         ({type: "scatter", mode: "lines+markers", name, x: dates, y: daily.map(r => r[key]), line: {color: c, dash},
           customdata: daily.map(r => [r.validTiming, r.queries]), hovertemplate: "%{x}<br>%{y:,.1f} ms<br>Timed: %{customdata[0]} / %{customdata[1]} queries<extra>%{fullData.name}</extra>"}))];
     const promises = [Plotly.react("trend", trend, layout("Query volume and first-page timing", {
-      xaxis: {...dateAxis}, yaxis: {title: "First-page return time (ms)", domain: [.35, 1], rangemode: "tozero"},
+      xaxis: {...dateAxis, anchor: "y2"}, yaxis: {title: "First-page return time (ms)", domain: [.35, 1], rangemode: "tozero"},
       yaxis2: {title: "Queries", domain: [0, .19], rangemode: "tozero"}, ...changeMark()}), config)];
     const comparisons = [], boxes = [];
     for (const name of visible) {
