@@ -48,7 +48,7 @@ def measurement(value, timing=False):
         return None, "missing"
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None, "invalid"
-    if not math.isfinite(value) or value != int(value) or abs(value) > 2**53 - 1:
+    if abs(value) > 2**53 - 1 or not math.isfinite(value) or value != int(value):
         return None, "invalid"
     if timing and value == -1:
         return None, "unset"
@@ -59,7 +59,7 @@ def measurement(value, timing=False):
 
 def normalize(records):
     """One latest complete snapshot per query; no coalescing or summing updates."""
-    canonical = [json.dumps(r, sort_keys=True, allow_nan=False) for r in records]
+    canonical = [json.dumps(r, sort_keys=True, allow_nan=True) for r in records]
     unique = list(dict.fromkeys(canonical))
     raw = {"inputRows": len(records), "exactDuplicateRows": len(records) - len(unique)}
     groups, quarantined = {}, set()

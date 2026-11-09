@@ -81,6 +81,18 @@ class AggregationTests(unittest.TestCase):
         stats = summarize(frame)
         self.assertEqual((stats["errors"], stats["errorKnown"], stats["errorRate"]), (2, 4, .5))
 
+    def test_nonfinite_and_huge_measurements_are_profiled_not_fatal(self):
+        values = [float("nan"), float("inf"), float("-inf"), 10**400]
+        rows = [record(str(i), timing=value, nextCount=value) for i, value in enumerate(values)]
+        frame, audit = normalize(rows + [record("good", timing=50)])
+        self.assertEqual(audit["retainedQueries"], 5)
+        self.assertEqual(frame.firstPageReturnTimeMsStatus.tolist().count("invalid"), 4)
+        self.assertEqual(frame.nextCountStatus.tolist().count("invalid"), 4)
+        result, tables = analyze(frame, audit)
+        self.assertEqual(result["summary"]["validTiming"], 1)
+        self.assertEqual(result["summary"]["medianMs"], 50)
+        json.dumps(result, allow_nan=False)
+
     def test_reject_distributed_updates_and_conflicting_ties(self):
         with self.assertRaisesRegex(ValueError, "COMPLETE"):
             normalize([record(metricType="DISTRIBUTED")])
