@@ -1,0 +1,9 @@
+{
+  "synthetic": true,
+  "seed": 20261001,
+  "queries": 20000,
+  "days": 30,
+  "changeDate": "2026-09-18",
+  "queryLogic": "EventQuery",
+  "note": "Generator/evaluation only. Never an input to analysis or report construction."
+}

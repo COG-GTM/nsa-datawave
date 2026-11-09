@@ -1,0 +1,34 @@
+name: Query metric analysis
+
+on:
+  pull_request:
+    branches: [integration]
+    paths:
+      - 'contrib/query-metric-analysis/**'
+      - '.github/workflows/query-metric-analysis.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analysis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild report and run analytical checks
+        run: ./contrib/query-metric-analysis/run.sh --regenerate
+      - name: Verify bundled data is reproducible
+        run: git diff --exit-code -- contrib/query-metric-analysis/data
+      - uses: actions/upload-artifact@v4
+        with:
+          name: synthetic-query-metric-analysis
+          path: contrib/query-metric-analysis/output/
+          retention-days: 14
