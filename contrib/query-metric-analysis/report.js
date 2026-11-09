@@ -22,6 +22,10 @@
     if (!Number.isFinite(first) || !Number.isFinite(last) || first > last) return null;
     return [new Date(first - 43200000).toISOString(), new Date(last + 43200000).toISOString()];
   }
+  function dateTicks(dates) {
+    const count = Math.min(5, dates.length);
+    return Array.from({length: count}, (_, i) => dates[Math.round(i * (dates.length - 1) / Math.max(1, count - 1))]);
+  }
   function ranks(values) {
     const sorted = values.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]);
     const result = Array(values.length);
@@ -42,7 +46,7 @@
     for (let i = 0; i < x.length; i++) {xy += (x[i] - mean) * (y[i] - mean); xx += (x[i] - mean) ** 2; yy += (y[i] - mean) ** 2;}
     return {pairs: pairs.length, rho: xx && yy ? xy / Math.sqrt(xx * yy) : null};
   }
-  root.MetricAnalysis = {quantile, summary, select, correlation, dateRange};
+  root.MetricAnalysis = {quantile, summary, select, correlation, dateRange, dateTicks};
   if (typeof module !== "undefined") module.exports = root.MetricAnalysis;
 })(typeof window === "undefined" ? globalThis : window);
 
@@ -50,7 +54,7 @@ if (typeof document !== "undefined") {
   "use strict";
   const payload = JSON.parse(document.getElementById("payload").textContent);
   const rows = payload.data.data.map(values => Object.fromEntries(payload.data.columns.map((c, i) => [c, values[i]])));
-  const {summary, select, quantile, correlation, dateRange} = window.MetricAnalysis;
+  const {summary, select, quantile, correlation, dateRange, dateTicks} = window.MetricAnalysis;
   const $ = id => document.getElementById(id);
   const fmt = (v, digits = 0) => Number.isFinite(v) ? v.toLocaleString("en-US", {maximumFractionDigits: digits}) : "—";
   const pct = v => Number.isFinite(v) ? `${(v * 100).toFixed(2)}%` : "—";
@@ -90,7 +94,7 @@ if (typeof document !== "undefined") {
     const selected = start && end && start <= end ? select(rows, start, end, logic) : [];
     const stats = summary(selected), dates = start && end && start <= end ? daysBetween(start, end) : [];
     const dateAxis = {type: "date", title: "Query creation date (UTC)", range: dateRange(start, end) || dateRange(startDay, endDay),
-      autorange: false, nticks: 5, tickformat: "%b %d", tickangle: 0};
+      autorange: false, tickmode: "array", tickvals: dateTicks(dates), tickformat: "%b %d", tickangle: 0};
     const visible = logic ? [logic] : logics;
     $("scope").textContent = `${selected.length.toLocaleString()} queries · ${start || "no start"} to ${end || "no end"} UTC · ${logic || "all query logic"}`;
     $("empty").hidden = !!selected.length;
@@ -105,7 +109,7 @@ if (typeof document !== "undefined") {
     selected.forEach(r => byDay.get(r.day)?.push(r));
     const daily = dates.map(day => ({day, ...summary(byDay.get(day))}));
     const trend = [
-      {type: "bar", name: "Queries", x: dates, y: daily.map(r => r.queries), marker: {color: "#b8c9d9"}, yaxis: "y2", hovertemplate: "%{x}<br>%{y:,} queries<extra></extra>"},
+      {type: "bar", name: "Queries", x: dates, y: daily.map(r => r.queries), width: 69120000, marker: {color: "#b8c9d9"}, yaxis: "y2", hovertemplate: "%{x}<br>%{y:,} queries<extra></extra>"},
       ...[["medianMs", "Median", "#0072B2", "solid"], ["p95Ms", "95th percentile", "#D55E00", "dash"]].map(([key, name, c, dash]) =>
         ({type: "scatter", mode: "lines+markers", name, x: dates, y: daily.map(r => r[key]), line: {color: c, dash},
           customdata: daily.map(r => [r.validTiming, r.queries]), hovertemplate: "%{x}<br>%{y:,.1f} ms<br>Timed: %{customdata[0]} / %{customdata[1]} queries<extra>%{fullData.name}</extra>"}))];

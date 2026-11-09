@@ -27,6 +27,17 @@ def record(qid="q1", timing=100, **overrides):
 
 
 class AggregationTests(unittest.TestCase):
+    @unittest.skipUnless(shutil.which("node"), "Node required for browser date ticks")
+    def test_browser_date_ticks_are_distinct_and_include_endpoints(self):
+        code = """
+const a = require(process.argv[1]);
+const dates = Array.from({length:30}, (_, i) => `2026-09-${String(i + 1).padStart(2, '0')}`);
+console.log(JSON.stringify([a.dateTicks([]), a.dateTicks(['2026-09-18']), a.dateTicks(dates)]));
+"""
+        proc = subprocess.run(["node", "-e", code, str(ROOT / "report.js")], text=True, capture_output=True, check=True)
+        self.assertEqual(json.loads(proc.stdout), [[], ["2026-09-18"],
+            ["2026-09-01", "2026-09-08", "2026-09-16", "2026-09-23", "2026-09-30"]])
+
     @unittest.skipUnless(shutil.which("node"), "Node required for browser date bounds")
     def test_browser_date_bounds_cover_selected_days(self):
         code = """
