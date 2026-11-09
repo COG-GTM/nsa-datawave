@@ -114,14 +114,14 @@ if (typeof document !== "undefined") {
         comparisons.push([name, period, fmt(stat.queries), fmt(calendarDays ? stat.queries / calendarDays : null, 1),
           `${fmt(stat.validTiming)} / ${fmt(stat.queries)}`, fmt(stat.medianMs, 1), fmt(stat.p95Ms, 1), `${stat.errors} / ${stat.errorKnown}`, pct(stat.errorRate)]);
         const times = part.map(r => r.firstPageReturnTimeMs).filter(Number.isFinite);
-        if (times.length) boxes.push({type: "box", name: `${esc(name)} · ${period}`, q1: [quantile(times, .25)], median: [stat.medianMs], q3: [quantile(times, .75)],
+        if (times.length) boxes.push({type: "box", name: `${esc(name)} · ${period}`, x: [`${esc(name)} · ${period}`], q1: [quantile(times, .25)], median: [stat.medianMs], q3: [quantile(times, .75)],
           lowerfence: [quantile(times, .05)], upperfence: [stat.p95Ms], boxpoints: false,
           marker: {color: color(name)}, fillcolor: period === "Before" ? "rgba(255,255,255,0.7)" : color(name),
           line: {width: 2}, customdata: [times.length], hovertemplate: `${esc(name)} · ${period}<br>Timed queries: ${times.length}<br>Median: ${fmt(stat.medianMs, 1)} ms<br>p95: ${fmt(stat.p95Ms, 1)} ms<extra></extra>`});
       }
     }
     table("comparison", ["Query logic", "Period", "Queries", "Queries/day", "Timed / all", "Median (ms)", "p95 (ms)", "Errors / known", "Error rate"], comparisons);
-    promises.push(Plotly.react("distribution", boxes, layout("Timing distributions by query logic", {showlegend: false, yaxis: {title: "First-page return time (ms)", rangemode: "tozero"}, xaxis: {tickangle: -15}, margin: {t: 75, l: 70, r: 35, b: 100}}), config));
+    promises.push(Plotly.react("distribution", boxes, layout("Timing distributions by query logic", {showlegend: false, yaxis: {title: "First-page return time (ms)", rangemode: "tozero"}, xaxis: {type: "category", tickangle: -15}, margin: {t: 75, l: 70, r: 35, b: 100}}), config));
     const errors = visible.map((name, i) => {
       const group = new Map(dates.map(d => [d, []]));
       selected.filter(r => r.queryLogic === name).forEach(r => group.get(r.day)?.push(r));
